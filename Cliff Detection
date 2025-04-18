@@ -34,7 +34,7 @@ int cliffCheck(oi_t *sensor)
     return cliffStatus;
 }
 
-In Interface
+Initilization example
 
 int cCheck = cliffCheck(sensor);
 int leftLine = sensor->cliffLeftSignal;
@@ -42,6 +42,8 @@ int frontLeftLine = sensor->cliffFrontLeftSignal
 int rightLine = sensor->cliffRightSignal;
 int frontRightLine = sensor->cliffFrontRightSignal;
 
+
+In Interface
 self->cliffLeft = packet[2];
 self->cliffFrontLeft = packet[3];
 self->cliffFrontRight = packet[4];
