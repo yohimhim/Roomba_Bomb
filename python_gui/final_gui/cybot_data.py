@@ -33,7 +33,8 @@ def cybot_display_plot():
     for line in file_data: 
         data = line.split()    # Split line into columns (by default delineates columns by whitespace)
         angle_degrees.append(float(data[0]))  # Column 0 holds the angle at which distance was measured
-        distance.append(float(data[1]))       # Column 1 holds the distance that was measured at a given angle       
+        distance.append(float(data[1]))       # Column 1 holds the distance that was measured at a given angle 
+
 
     # Convert python sequence (list of strings) into a numpy array
     angle_degrees = np.array(angle_degrees) # Avoid "TypeError: can't multiply sequence by non-int of type float"
@@ -60,3 +61,5 @@ def cybot_display_plot():
     ax.set_title("POLAR PLOT", size=14, y=1.0, pad=-24) 
 
     return fig
+
+
