@@ -1,0 +1,60 @@
+// Example of movement that stops on sensor detection, tested and works
+void superman_Drive(oi_t*sensor_data, double distance_mm, int speed){
+
+    double moved = 0;
+    int right_bump = 0;
+    int left_bump = 0;
+
+    oi_setWheels(speed,speed);
+
+    while(moved < distance_mm){
+        oi_update(sensor_data);
+        moved += sensor_data ->distance;
+        right_bump = sensor_data ->bumpRight;
+        left_bump = sensor_data ->bumpLeft;
+
+        if(sensor_data ->cliffFrontLeft || sensor_data ->cliffFrontRight || sensor_data ->cliffLeft || sensor_data ->cliffRight){
+
+            int cc = get_cliff(sensor_data);
+            lcd_printf("Sensor Triggered: %d",cc);
+            oi_setWheels(0,0);
+            move_backward(sensor_data,20,500);
+        }
+
+
+
+
+
+
+    }
+
+}
+// get sensor method wich returns a number of which sensor is triggered, 1 left, 2 front left, 3, front right, 4 right. 
+int get_cliff(oi_t *sensor){
+    oi_update(sensor);
+
+
+    if(sensor ->cliffLeft){
+
+        return 1;
+    }
+    else if(sensor ->cliffRight){
+
+        return 4;
+    }
+    else if(sensor ->cliffFrontLeft){
+
+        return 2;
+    }
+    else if(sensor ->cliffFrontRight){
+
+        return 3;
+    }
+    else{
+
+     return 0;
+
+    }
+
+
+}
