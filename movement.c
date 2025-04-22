@@ -15,16 +15,16 @@
  * Manual Methods
  */
 void manual_move_forward(){
-    oi_setWheels(500, 500);
+    oi_setWheels(100, 100);
 }
 void manual_move_backward(){
-    oi_setWheels(-500, -500);
+    oi_setWheels(-100, -100);
 }
 void manual_turn_left(){
-    oi_setWheels(250, -250);
+    oi_setWheels(100, -100);
 }
 void manual_turn_right(){
-    oi_setWheels(-250, 250);
+    oi_setWheels(-100, 100);
 }
 void manual_stop(){
     oi_setWheels(0, 0);

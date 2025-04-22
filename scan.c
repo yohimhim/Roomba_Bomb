@@ -13,7 +13,7 @@
 int ir_vals[] = {3758, 3308, 2305, 1852, 1621, 1463, 1312, 1207, 1125, 1069, 1044, 1016, 931, 925, 900, 832, 822, 799, 775, 757};
 int dist_cm[] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100};
 int current_ir_vals[16];
-float smallest_Distance;
+float largest_Distance;
 
 
 int ir_scan(){
@@ -32,18 +32,23 @@ int ir_scan(){
         IR_val = adc_conversion();
         current_ir_vals[x] = IR_val;
 
-        sprintf(data, "%d\r\n", IR_val);   //print out data
-        char* dataPosition = data;
-        while(*dataPosition !='\0'){
-            cyBot_sendByte(*dataPosition++);
-        }
-
-        x++;
         if (cancel_scan_flag == 1) {
             lcd_clear();
             lcd_puts("CANCELLED SCAN.");
             return 0;
         }
+
+        sprintf(data, "%d\r\n", IR_val);   //print out data
+        char* dataPosition = data;
+        while(*dataPosition !='\0'){
+
+
+
+            cyBot_sendByte(*dataPosition++);
+        }
+
+        x++;
+
     }
 
     for (; i < 19; i++){
@@ -106,7 +111,7 @@ float ping_scan(oi_t *sensor_data) {
 
 
     int isObject;
-    int smallestIndex = 0;
+    int largestIndex = 0;
     float total = 0.0;
     float batchAvg = 0.0;
 
@@ -120,6 +125,8 @@ float ping_scan(oi_t *sensor_data) {
             for (i=0; i<headerLength;i++){
                 cyBot_sendByte(header[i]); //Prints the header out 1 character at a time.
             }
+
+
             for(j=0; j <= 180; j+=2){
 
                 //ADC scan data using built adc
@@ -220,22 +227,22 @@ float ping_scan(oi_t *sensor_data) {
             }
 
 
-    int smallestWidth = object[0].linear_width;
+    int largestWidth = object[0].linear_width;
      int t;
      for (t = 1; t < objectCount; t++) {
-         if (object[t].linear_width > 0 && object[t].linear_width < smallestWidth) {
-             smallestWidth = object[t].linear_width;
-             smallestIndex = t;
+         if (object[t].linear_width > 0 && object[t].linear_width > largestWidth) {
+             largestWidth = object[t].linear_width;
+             largestIndex = t;
          }
      }
-     smallest_Distance = object[smallestIndex].distance;
-     cyBOT_Scan(object[smallestIndex].angle, &scan);
+     largest_Distance = object[largestIndex].distance;
+     cyBOT_Scan(object[largestIndex].angle, &scan);
      break;
      }
-     return object[smallestIndex].angle;
+     return object[largestIndex].angle;
 
 
 }
 
 
-float get_smallest_dist() {return smallest_Distance;}
+float get_largest_dist() {return largest_Distance;}

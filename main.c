@@ -35,14 +35,24 @@ enum driver_state_t state = AUTO;
     double sum = 0;
     double distance = 0;
 
+    int atBomb = 0;
+
+    oi_setWheels(0,0);
+
 
     while(1)
     {
         //flag_monitor(sensor_data);
         if (state == AUTO){
+
+
             while (state == AUTO){
                 //AUTO MODE DRIVING
+
+
+                //Return if it reaches the object
                 if (distance != 0 && sum >= distance){
+                    atBomb = 1;
                     return;
                 }
 
@@ -53,14 +63,18 @@ enum driver_state_t state = AUTO;
 
 
                      float angleToObject =  ping_scan(sensor_data); //Angle from scan
+                     flag_monitor(sensor_data);
+
+                     //If the scan is cancelled, we don't want it to calculate angles
+                     if(angleToObject == -1){
+                         cancel_scan_flag = 0;
+                         break;
+                     }
 
                      distance = ir_scan() * 3;
 
 
-                     if(angleToObject == -1){
-                         flag_monitor(sensor_data);
-                         break;
-                     }
+
 
                      if (angleToObject < 90){ //turn to the right
                          angleToObject =  90 - angleToObject; //Angle to move the bot right
@@ -81,59 +95,10 @@ enum driver_state_t state = AUTO;
                     oi_update(sensor_data);
                     flag_monitor(sensor_data);
                     sum += sensor_data->distance;
-
-                //bumper and driving conditions
-                    if (sensor_data->bumpLeft){                          //left bumper hit
-
-                        //BACK UP
-                        move_backward(sensor_data, 100);
-                        timer_waitMillis(50);
-
-                        //TURN RIGHT
-                        move_right(sensor_data, 90);
-                        timer_waitMillis(50);
-
-                        //GO FORWARDS
-                        move_forward(sensor_data, 250);
-                        timer_waitMillis(50);
-
-                        //TURN BACK LEFT
-                        move_left(sensor_data, 150);
-
-                        //GO FORWARDS
-                        move_forward(sensor_data, 100);
-                        timer_waitMillis(50);
-                        break;
-                    }
-                     if (sensor_data->bumpLeft){                          //right bumper hit
-                        //MOVE BACKWARDS
-                           move_backward(sensor_data, 100);
-                           timer_waitMillis(50);
-
-
-                           //TURN BACK LEFT
-                           move_left(sensor_data, 90);
-
-                           //GO FORWARDS
-                           move_forward(sensor_data, 250);
-                           timer_waitMillis(50);
-
-
-                           //TURN RIGHT
-                           move_right(sensor_data, 150);
-
-
-                           //GO FORWARDS
-                           move_forward(sensor_data, 100);
-                           timer_waitMillis(50);
-                           break;
-                     }
-
                 }
                 oi_setWheels(0,0);
+                }
 
-
-            }
         } else if (state == MANUAL){
             while (state == MANUAL){
                 //MANUAL MODE DRIVING

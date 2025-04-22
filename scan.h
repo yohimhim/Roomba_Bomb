@@ -21,7 +21,7 @@
 float ping_scan(oi_t *sensor_data);
 int ir_scan();
 int obj_distance(double avg_ir);
-float get_smallest_dist();
+float get_largest_dist();
 
 
 #endif
