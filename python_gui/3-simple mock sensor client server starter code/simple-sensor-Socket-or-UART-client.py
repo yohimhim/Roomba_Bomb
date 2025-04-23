@@ -46,7 +46,7 @@ while True:
 
                 if len(char) == 1:
                         send_message = char + '\n'
-                        print(f"SendingL {char}")
+                        print(f"Sending {char}")
                         cybot.write(send_message.encode())
 
                         if char.lower() == 'q':
