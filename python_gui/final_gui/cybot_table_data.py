@@ -21,29 +21,32 @@ def ping_table_data(parent_frame):
 
     # Data Tables
     angle_degrees = []
-    distance = []
+    ping = []
+    ir = []
 
     for line in file_data: 
         data = line.split()                   # Split line into columns (by default delineates columns by whitespace)
         angle_degrees.append(float(data[0]))  # Column 0 holds the angle at which distance was measured
-        distance.append(float(data[1]))       # Column 1 holds the distance that was measured at a given angle 
+        ping.append(float(data[1]))       # Column 1 holds the distance that was measured at a given angle 
+        ir.append(float(data[2]))
 
     # Create Treeview
-    tree = ttk.Treeview(parent_frame, columns=("Angle", "Distance"), show="headings")
+    tree = ttk.Treeview(parent_frame, columns=("Angle", "Ping", "IR"), show="headings")
     tree.heading("Angle", text="Angle (degrees)")
-    tree.heading("Distance", text="Distance (cm)")
+    tree.heading("Ping", text="Ping (cm)")
+    tree.heading("IR", text="IR (cm)")
     tree.column("Angle", anchor="center", width=100)
-    tree.column("Distance", anchor="center", width=100)
+    tree.column("Ping", anchor="center", width=100)
+    tree.column("IR", anchor="center", width=100)
 
     # Insert data
-    for angle, dist in zip(angle_degrees, distance):
-        tree.insert("", "end", values=(angle, dist))
+    for angle, ping_val, ir_val in zip(angle_degrees, ping, ir):
+        tree.insert("", "end", values=(angle, ping_val, ir_val))
 
     # Add Treeview (table) to parent frame/window grid
-    tree.grid(row=0, column=0, sticky="nsew")
+    tree.grid(sticky="nsew")
     
     # Makes sure columns are equal size
-    parent_frame.columnconfigure(0, weight=1, uniform="equal")  # Column 0 for angle
-    parent_frame.columnconfigure(1, weight=1, uniform="equal")  # Column 1 for distance
-
-
+    #parent_frame.columnconfigure(0, weight=1, uniform="equal")  # Column 0 for angle
+    #parent_frame.columnconfigure(1, weight=1, uniform="equal")  # Column 1 for ping
+    #parent_frame.columnconfigure(2, weight=1, uniform="equal")  # Column 2 for ir

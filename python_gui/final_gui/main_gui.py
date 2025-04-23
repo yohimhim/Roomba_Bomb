@@ -1,7 +1,7 @@
 # Tkinter GUI library
 import tkinter as tk 
 #CyBot plot imports
-import Roomba_Bomb.python_gui.final_gui.cybot_data as cybot_data
+import cybot_data as cybot_data
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import cybot_table_data
 
@@ -26,15 +26,14 @@ def gui_init():
     window.columnconfigure(1, weight=2)
 
     #Initialize frames for data visualization
-    scan_data = tk.Frame(window, bg="gray")
+    scan_data = tk.Frame(window, bg="red")
     polar_plot = tk.Frame(window, bg="gray")
-    RT_cybot_visual = tk.Frame(window, bg="gray")
-    cybot_actions = tk.Frame(window, bg="gray")
+    RT_cybot_visual = tk.Frame(window, bg="blue")
+    cybot_actions = tk.Frame(window, bg="yellow")
     
     #Place frames in grid
     scan_data.grid(row=0, column=0, rowspan=2, sticky="nsew")
     polar_plot.grid(row=0, column=1, sticky="nsew")
-    RT_cybot_visual.grid(row=1, column=1, sticky="nsew")
     cybot_actions.grid(row=1, column=1, sticky="nsew")
 
     #Allow for items in frames to resize with window
@@ -42,8 +41,7 @@ def gui_init():
     scan_data.grid_columnconfigure(0, weight=1)
     polar_plot.grid_rowconfigure(0, weight=1)
     polar_plot.grid_columnconfigure(0, weight=1)
-    RT_cybot_visual.grid_rowconfigure(0, weight=1)
-    RT_cybot_visual.grid_columnconfigure(0, weight=1)
+
     cybot_actions.grid_rowconfigure(0, weight=1)
     cybot_actions.grid_columnconfigure(0, weight=1)
 
