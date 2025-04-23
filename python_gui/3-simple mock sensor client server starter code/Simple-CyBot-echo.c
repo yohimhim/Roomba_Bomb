@@ -12,9 +12,9 @@
 
 int main (void) {
 
-  timer_init(); // Initialize Timer, needed before any LCD screen fucntions can be called 
-	              // and enables time functions (e.g. timer_waitMillis)
-  lcd_init();   // Initialize the the LCD screen.  This also clears the screen. 
+  timer_init(); // Initialize Timer, needed before any LCD screen fucntions can be called
+                  // and enables time functions (e.g. timer_waitMillis)
+  lcd_init();   // Initialize the the LCD screen.  This also clears the screen.
   cyBot_uart_init();  // Initialize UART
 
   char my_data;       // Variable to get bytes from Client
@@ -55,6 +55,6 @@ int main (void) {
     }
 
   }
- 
+
   return 0;
 }
