@@ -14,14 +14,14 @@ import socket
 
 # Choose to create either a UART or TCP port socket to communicate with Cybot (Not both!!: I.e, comment out the one not being used)
 # UART BEGIN
-cybot = serial.Serial('COM100', 115200)  # UART (Make sure you are using the correct COM port and Baud rate!!)
+cybot = serial.Serial('COM1', 115200)  # UART (Make sure you are using the correct COM port and Baud rate!!)
 # UART END
 
 # TCP Socket BEGIN (See Echo Client example): https://realpython.com/python-sockets/#echo-client-and-server
-HOST = "127.0.0.1"  # The server's hostname or IP address
-PORT = 65432        # The port used by the server
-cybot_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
-cybot_socket.connect((HOST, PORT))   # Connect to the socket  (Note: Server must first be running)
+# HOST = "127.0.0.1"  # The server's hostname or IP address
+# PORT = 65432        # The port used by the server
+# cybot_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
+# cybot_socket.connect((HOST, PORT))   # Connect to the socket  (Note: Server must first be running)
                       
 cybot = cybot_socket.makefile("rbw", buffering=0)  # makefile creates a file object out of a socket:  https://pythontic.com/modules/socket/makefile
 # TCP Socket END
@@ -45,4 +45,4 @@ while send_message != 'quit\n':
 print("Client exiting, and closing file descriptor, and/or network socket\n")
 time.sleep(2) # Sleep for 2 seconds
 cybot.close()         # Close file object associated with the socket or UART
-cybot_socket.close()  # Close the socket (NOTE: comment out if using UART interface, only use for network socket option)
+# cybot_socket.close()  # Close the socket (NOTE: comment out if using UART interface, only use for network socket option)
