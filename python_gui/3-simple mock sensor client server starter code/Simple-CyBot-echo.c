@@ -9,19 +9,25 @@
 #include "Timer.h"
 #include "lcd.h"
 #include "cyBot_uart.h"
+#include "cyBot_Scan.h"
+#include "movement.h"
 
 int main (void) {
+
+    oi_t *sensor_data = oi_alloc(); // do this only once at start of main()
+    oi_init(sensor_data);
 
   timer_init(); // Initialize Timer, needed before any LCD screen fucntions can be called
                   // and enables time functions (e.g. timer_waitMillis)
   lcd_init();   // Initialize the the LCD screen.  This also clears the screen.
   cyBot_uart_init();  // Initialize UART
+  cyBOT_init_Scan(0b0111);
 
   char my_data;       // Variable to get bytes from Client
   char command[100];  // Buffer to store command from Client
   int index = 0;      // Index position within the command buffer
+  cyBOT_Scan_t myScan;
 
-  // Write to LCD so that we know the program is running
   lcd_printf("Running");
 
   while(1)
@@ -41,7 +47,29 @@ int main (void) {
     command[index] = '\n';  // place newline into command in case one wants to echo the full command back to the Client
     command[index+1] = 0;   // End command C-string with a NULL byte so that functions like printf know when to stop printing
 
-    lcd_printf("Got: %s", command);  // Print received command to the LCD screen
+    switch (command[0])
+    {
+        case 'w':
+            oi_setWheels(100, 100);
+            break;
+        case 'a':
+            oi_setWheels(100, -100);
+            break;
+        case 's':
+            oi_setWheels(-100, -100);
+            break;
+        case 'd':
+            oi_setWheels(-100, 100);
+            break;
+        case 'f':
+            oi_setWheels(0, 0);
+            break;
+        case 'm':
+
+    }
+
+
+
 
     // Send a response to the Client (Starter Client expects the response to end with \n)
     // In this case I am just sending back the first byte of the command received and a '\n'
