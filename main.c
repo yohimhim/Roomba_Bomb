@@ -16,7 +16,7 @@
 
 #warning "Possible unimplemented functions"
 
-enum driver_state_t state = AUTO;
+enum driver_state_t state = MANUAL;
 
 
     void main() {
@@ -42,18 +42,22 @@ enum driver_state_t state = AUTO;
 
     while(1)
     {
+
+
         //flag_monitor(sensor_data);
         if (state == AUTO){
 
-
-            while (state == AUTO){
+            while (state == AUTO && !atBomb){
                 //AUTO MODE DRIVING
 
 
                 //Return if it reaches the object
-                if (distance != 0 && sum >= distance){
-                    atBomb = 1;
-                    return;
+                if (distance != 0 && sum >= (distance - 10)){
+                    lcd_clear();
+                     lcd_printf("dist %f : %f", distance, sum);
+                    state = MANUAL;
+
+                    break;
                 }
 
                 sum =0;
@@ -61,7 +65,7 @@ enum driver_state_t state = AUTO;
                      flag_monitor(sensor_data);
                      oi_update(sensor_data);
 
-
+wwww
                      float angleToObject =  ping_scan(sensor_data); //Angle from scan
                      flag_monitor(sensor_data);
 
@@ -79,12 +83,10 @@ enum driver_state_t state = AUTO;
                      if (angleToObject < 90){ //turn to the right
                          angleToObject =  90 - angleToObject; //Angle to move the bot right
                          move_right (sensor_data, angleToObject);
-                         lcd_printf("right: %f", angleToObject);
                      }
                      else if (angleToObject > 90) {
                          angleToObject = angleToObject - 90;  //Angle to move the bot left
                          move_left (sensor_data, angleToObject);
-                         lcd_printf("left: %f", angleToObject);
                      }
                      angleToObject = 0;
 
@@ -99,7 +101,10 @@ enum driver_state_t state = AUTO;
                 oi_setWheels(0,0);
                 }
 
-        } else if (state == MANUAL){
+        }
+
+        else if (state == MANUAL){
+
             while (state == MANUAL){
                 //MANUAL MODE DRIVING
                 flag_monitor(sensor_data);

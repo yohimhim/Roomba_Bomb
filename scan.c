@@ -57,10 +57,6 @@ int ir_scan(){
     avg_ir = avg_ir / 16;
     distance_cm = obj_distance(avg_ir);
 
-    sprintf(buffer, "%f:%d", avg_ir, distance_cm);
-    lcd_clear();
-    //output distance and ir val to lcd
-    lcd_puts(buffer);
 
 
     return distance_cm;
