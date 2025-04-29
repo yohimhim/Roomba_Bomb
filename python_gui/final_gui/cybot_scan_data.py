@@ -1,6 +1,7 @@
 #plot imports
 import numpy as np
 import matplotlib.pyplot as plt
+
 #filepath import
 import os
 
@@ -60,4 +61,4 @@ def cybot_display_plot():
     # Create title for plot (font size = 14pt, y & pad controls title vertical location)
     ax.set_title("POLAR PLOT", size=14, y=1.0, pad=-24) 
 
-    return fig
+    return fig, ax

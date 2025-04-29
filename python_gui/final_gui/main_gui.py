@@ -1,15 +1,26 @@
 # Tkinter GUI library
-import tkinter as tk 
+import tkinter as tk
+from turtle import update 
+import matplotlib.animation as animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 #CyBot plot imports
 import cybot_scan_data
 import cybot_table_data
 import cybot_sensor_data
 from PIL import Image, ImageTk
+import pylab as pl
+import time
+
+cy_x = 0
+cy_y = 0
+circle = None
+ax = None
+canvas = None
 
 def main():
     draw_gui()
     fetch_data()
+    cybot_animate()
     window.mainloop()
 
 def draw_gui():
@@ -94,19 +105,39 @@ def draw_gui():
     image_label.grid(row=0, column=1)
 
 def fetch_data():
-    #Polar Plot------------------------------------------------------------------------
-    fig = cybot_scan_data.cybot_display_plot()
-    plot = FigureCanvasTkAgg(fig, master=polar_plot)
-    plot.draw()
-    plot.get_tk_widget().grid(sticky="nsew")
+    global fig, ax, canvas, circle
 
-    #Angle, PING, IR data--------------------------------------------------------------
+    # Get plot from cybot_scan_data.py
+    fig, ax = cybot_scan_data.cybot_display_plot()
+
+    # Add initial Cybot at 0, 0
+    circle = pl.Circle((cy_x, cy_y), 4, transform=ax.transData._b, color="blue", alpha=0.4)
+    ax.add_artist(circle)
+
+    # Add plot to frame: polar_plot
+    canvas = FigureCanvasTkAgg(fig, master=polar_plot)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
+
+    # 
     cybot_table_data.ping_table_data(scan_data)
-
-    #Bump and Cliff data---------------------------------------------------------------
     cybot_sensor_data.update_cybot_sensors()
-    
-    #Cybot Animation
+
+def cybot_animate():
+    global cy_x, cy_y, circle, canvas
+
+    cy_x += 1
+    cy_y += 1
+
+    if circle:
+        circle.set_center((cy_x, cy_y))  # Move circle
+
+    canvas.draw()  # Redraw canvas with new coordinates
+
+    window.after(1000, cybot_animate)
+
+
+
 
 #Main
 main()
