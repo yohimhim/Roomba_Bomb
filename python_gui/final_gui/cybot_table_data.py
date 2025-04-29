@@ -1,9 +1,4 @@
-#plot imports
-from logging import root
 from tkinter import ttk
-import tkinter as tk
-import numpy as np
-import matplotlib.pyplot as plt
 #filepath import
 import os
 
@@ -45,8 +40,3 @@ def ping_table_data(parent_frame):
 
     # Add Treeview (table) to parent frame/window grid
     tree.grid(sticky="nsew")
-    
-    # Makes sure columns are equal size
-    #parent_frame.columnconfigure(0, weight=1, uniform="equal")  # Column 0 for angle
-    #parent_frame.columnconfigure(1, weight=1, uniform="equal")  # Column 1 for ping
-    #parent_frame.columnconfigure(2, weight=1, uniform="equal")  # Column 2 for ir

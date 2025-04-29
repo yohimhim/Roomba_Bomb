@@ -1,24 +1,26 @@
 # Tkinter GUI library
 import tkinter as tk 
-#CyBot plot imports
-import cybot_data as cybot_data
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+#CyBot plot imports
+import cybot_scan_data
 import cybot_table_data
+import cybot_sensor_data
+from PIL import Image, ImageTk
 
 def main():
-    gui_init()
-    data_init()
+    draw_gui()
+    fetch_data()
     window.mainloop()
 
-def gui_init():
+def draw_gui():
     # Made global window so quit function (send_quit) can access
     global window
     #Make global frames so that data can be displayed from data_init()
-    global scan_data, polar_plot, RT_cybot_visual, cybot_actions
+    global scan_data, polar_plot, RT_cybot_visual, cybot_sensors
 
     window = tk.Tk() # Create a Tk GUI Window
     window.title("CPRE-2880 Project Final GUI")
-    window.geometry("500x500")
+    window.geometry("1000x1000")
 
     #Using grid formation and .grid() is easier than .pack()
     window.rowconfigure([0, 1], weight=1)
@@ -26,35 +28,85 @@ def gui_init():
     window.columnconfigure(1, weight=2)
 
     #Initialize frames for data visualization
-    scan_data = tk.Frame(window, bg="red")
-    polar_plot = tk.Frame(window, bg="gray")
-    RT_cybot_visual = tk.Frame(window, bg="blue")
-    cybot_actions = tk.Frame(window, bg="yellow")
+    scan_data = tk.Frame(window, bg="white")
+    polar_plot = tk.Frame(window, bg="white")
+    cybot_sensors = tk.Frame(window, bg="white")
     
     #Place frames in grid
     scan_data.grid(row=0, column=0, rowspan=2, sticky="nsew")
     polar_plot.grid(row=0, column=1, sticky="nsew")
-    cybot_actions.grid(row=1, column=1, sticky="nsew")
+    cybot_sensors.grid(row=1, column=1, sticky="nsew")
 
     #Allow for items in frames to resize with window
     scan_data.grid_rowconfigure(0, weight=1)
     scan_data.grid_columnconfigure(0, weight=1)
     polar_plot.grid_rowconfigure(0, weight=1)
     polar_plot.grid_columnconfigure(0, weight=1)
+    cybot_sensors.grid_rowconfigure(0, weight=1)
+    cybot_sensors.grid_columnconfigure(0, weight=1)
 
-    cybot_actions.grid_rowconfigure(0, weight=1)
-    cybot_actions.grid_columnconfigure(0, weight=1)
+    #The following code configures the cybot_sensors frame---------------------------------------------------
+    sensor_label_container = tk.Frame(cybot_sensors, bg="white")
+    sensor_label_container.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
 
-def data_init():
-    #Polar Plot
-    fig = cybot_data.cybot_display_plot()
+    #create labels
+    cliff1_label = tk.StringVar()
+    cliff2_label = tk.StringVar()
+    cliff3_label = tk.StringVar()
+    cliff4_label = tk.StringVar()
+    bump_right_label = tk.StringVar()
+    bump_left_label = tk.StringVar()
+
+    #set default starting text
+    cliff1_label.set("Cliff 1 Sensor: ---")
+    cliff2_label.set("Cliff 2 Sensor: ---")
+    cliff3_label.set("Cliff 3 Sensor: ---")
+    cliff4_label.set("Cliff 4 Sensor: ---")
+    bump_right_label.set("Bump right Sensor: ---")
+    bump_left_label.set("Bump left Sensor: ---")
+
+    #config labels
+    cliff1_label = tk.Label(sensor_label_container, textvariable=cliff1_label, font=(16))
+    cliff2_label = tk.Label(sensor_label_container, textvariable=cliff2_label, font=(16))
+    cliff3_label = tk.Label(sensor_label_container, textvariable=cliff3_label, font=(16))
+    cliff4_label = tk.Label(sensor_label_container, textvariable=cliff4_label, font=(16))
+    bump_right_label = tk.Label(sensor_label_container, textvariable=bump_right_label, font=(16))
+    bump_left_label = tk.Label(sensor_label_container, textvariable=bump_left_label, font=(16))
+
+    #place labels
+    cliff1_label.grid(row=0, column=0, sticky="w", padx=2, pady=2)
+    cliff2_label.grid(row=1, column=0, sticky="w", padx=2, pady=2)
+    cliff3_label.grid(row=2, column=0, sticky="w", padx=2, pady=2)
+    cliff4_label.grid(row=3, column=0, sticky="w", padx=2, pady=2)
+    bump_right_label.grid(row=4, column=0, sticky="w", padx=2, pady=2)
+    bump_left_label.grid(row=5, column=0, sticky="w", padx=2, pady=2)
+
+    # Load and display punching cy!
+    original_image = Image.open("Roomba_Bomb/python_gui/punchingcy.jpg")
+    resized_image = original_image.resize((300, 300), Image.Resampling.LANCZOS)
+    photo = ImageTk.PhotoImage(resized_image)
+    
+    # Store photo reference to prevent garbage collection
+    # This line fixed image not appearing
+    cybot_sensors.photo = photo
+
+    image_label = tk.Label(cybot_sensors, image=photo)
+    image_label.grid(row=0, column=1)
+
+def fetch_data():
+    #Polar Plot------------------------------------------------------------------------
+    fig = cybot_scan_data.cybot_display_plot()
     plot = FigureCanvasTkAgg(fig, master=polar_plot)
-
-    #Data Tables
-    cybot_table_data.ping_table_data(scan_data)
-
     plot.draw()
     plot.get_tk_widget().grid(sticky="nsew")
+
+    #Angle, PING, IR data--------------------------------------------------------------
+    cybot_table_data.ping_table_data(scan_data)
+
+    #Bump and Cliff data---------------------------------------------------------------
+    cybot_sensor_data.update_cybot_sensors()
+    
+    #Cybot Animation
 
 #Main
 main()
