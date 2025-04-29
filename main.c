@@ -16,7 +16,7 @@
 
 #warning "Possible unimplemented functions"
 
-enum driver_state_t state = MANUAL;
+enum driver_state_t state = AUTO;
 
 
     void main() {
@@ -40,8 +40,8 @@ enum driver_state_t state = MANUAL;
     double sum = 0;
     double distance = 0;
 
-    double firstScan;
-    double secondScan;
+    float firstScan;
+    float secondScan;
 
     int atBomb = 0;
 
@@ -88,7 +88,7 @@ enum driver_state_t state = MANUAL;
 
                      //Turn 180 degrees
                      oi_setWheels(-100, 100);
-                     timer_waitMillis(2500);
+                     timer_waitMillis(3200);
                      oi_setWheels(0, 0);
 
                      float angleToObject2 =  ping_scan(sensor_data); //Angle from second scan
@@ -101,11 +101,13 @@ enum driver_state_t state = MANUAL;
                       break;
                     }
 
+                     lcd_printf("first: %lf\nsecond: %lf",firstScan, secondScan);
+
                      //compare the scans
                      if(firstScan > secondScan){
                           //Turn 180 degrees
                         oi_setWheels(-100, 100);
-                        timer_waitMillis(2500);
+                        timer_waitMillis(3200);
                         oi_setWheels(0, 0);
 
                      } 
