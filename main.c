@@ -29,11 +29,19 @@ enum driver_state_t state = MANUAL;
     adc_init();
     cyBot_uart_init();
     cyBOT_init_Scan(0b0111);
+
+    char my_data;       // Variable to get bytes from Client
+//    char command[100];  // Buffer to store command from Client
+//    int index = 0;      // Index position within the command buffer
+
     //cyBOT_SERVO_Cal();
     right_calibration_value = 253750;
     left_calibration_value = 1288000;
     double sum = 0;
     double distance = 0;
+
+    double firstScan;
+    double secondScan;
 
     int atBomb = 0;
 
@@ -49,6 +57,7 @@ enum driver_state_t state = MANUAL;
 
             while (state == AUTO && !atBomb){
                 //AUTO MODE DRIVING
+                lcd_printf("we are in auto");
 
 
                 //Return if it reaches the object
@@ -60,20 +69,55 @@ enum driver_state_t state = MANUAL;
                     break;
                 }
 
-                sum =0;
-                distance =0;
+                sum = 0;
+                distance = 0;
                      flag_monitor(sensor_data);
                      oi_update(sensor_data);
 
-wwww
-                     float angleToObject =  ping_scan(sensor_data); //Angle from scan
+
+
+                     float angleToObject1 =  ping_scan(sensor_data); //Angle from first scan
+                     firstScan = get_largest_width();
                      flag_monitor(sensor_data);
 
                      //If the scan is cancelled, we don't want it to calculate angles
-                     if(angleToObject == -1){
+                     if(angleToObject1 == -1){
                          cancel_scan_flag = 0;
                          break;
                      }
+
+                     //Turn 180 degrees
+                     oi_setWheels(-100, 100);
+                     timer_waitMillis(2500);
+                     oi_setWheels(0, 0);
+
+                     float angleToObject2 =  ping_scan(sensor_data); //Angle from second scan
+                     secondScan = get_largest_width();
+                     flag_monitor(sensor_data);
+
+                     //If the scan is cancelled, we don't want it to calculate angles
+                     if(angleToObject2 == -1){
+                        cancel_scan_flag = 0;
+                      break;
+                    }
+
+                     //compare the scans
+                     if(firstScan > secondScan){
+                          //Turn 180 degrees
+                        oi_setWheels(-100, 100);
+                        timer_waitMillis(2500);
+                        oi_setWheels(0, 0);
+
+                     } 
+                        float angleToObject = ping_scan(sensor_data);
+                        flag_monitor(sensor_data);
+
+                              //If the scan is cancelled, we don't want it to calculate angles
+                              if(angleToObject == -1){
+                                cancel_scan_flag = 0;
+                                break;
+                            }
+
 
                      distance = ir_scan() * 3;
 
@@ -106,19 +150,45 @@ wwww
         else if (state == MANUAL){
 
             while (state == MANUAL){
+                lcd_printf("we are in manual");
                 //MANUAL MODE DRIVING
                 flag_monitor(sensor_data);
-                char command = uart_receive();
-                if (command == 'a'){
-                    manual_turn_left();
-                } else if (command == 'w'){
-                    manual_move_forward();
-                } else if (command == 's'){
-                    manual_move_backward();
-                } else if (command == 'd'){
-                    manual_turn_right();
-                } else if (command == 'f'){
-                    manual_stop();
+                //index = 0;  // Set index to the beginning of the command buffer
+                my_data = cyBot_getByte(); // Get first byte of the command from the Client
+
+
+                switch (my_data)
+                {
+                    case 'w':
+                        oi_setWheels(100, 100);
+                        break;
+                    case 'a':
+                        oi_setWheels(100, -100);
+                        break;
+                    case 's':
+                        oi_setWheels(-100, -100);
+                        break;
+                    case 'd':
+                        oi_setWheels(-100, 100);
+                        break;
+                    case 'f':
+                        oi_setWheels(0, 0);
+                        break;
+                    case 'm':
+                        //for scanning fully
+                        break;
+                    case 'q':
+                        //for scanning directly infront?
+                        /*
+                         *
+                         * Maybe import another scan library. Manual can use cyBot_Scan.h
+                         * and Auto can use their own scan.h?
+                         *
+                         */
+                        //cyBOT_Scan(90, scan)
+                        break;
+                    default:
+                        break;
                 }
             }
         }
