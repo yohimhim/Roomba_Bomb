@@ -108,29 +108,37 @@ void manual_stop(){
 
  int get_cliff(oi_t *sensor){
     oi_update(sensor);
+    int color; 
 
 
-    if(sensor ->cliffLeft){
+    if(sensor ->cliffLeft || sensor ->cliffRight || sensor ->cliffFrontLeft || sensor ->cliffFrontRight){ //if the sensor is triggered
+        // set variables for Raw data
+        oi_setWheels(0,0);
+        oi_update(sensor_data);
 
-        return sensor ->cliffLeftSignal;
-    }
-    else if(sensor ->cliffRight){
+        int csR  = sensor_data->cliffRightSignal;
+        int csFR = sensor_data->cliffFrontRightSignal;
+        int csL  = sensor_data->cliffLeftSignal;
+        int csFL = sensor_data->cliffFrontLeftSignal;
 
-        return sensor ->cliffRightSignal;
-    }
-    else if(sensor ->cliffFrontLeft){
+        if ( (csR  < 200 ||csL  < 200 ||csFR < 200 ||csFL < 200) ) { // check for black tape
 
-        return sensor ->cliffFrontLeftSignal;
-    }
-    else if(sensor ->cliffFrontRight){
+        lcd_printf("Black Found");
+        move_backward(sensor_data,60,100);
+        
+        color = 1;
+        }   else if ( csR  >= 2700 ||csL  >= 2700 ||csFR >= 2700 ||csFL >= 2700 ) { // check for white tape
 
-        return sensor ->cliffFrontRightSignal;
-    }
-    else{
-
-     return 0;
-
-    }
+        lcd_printf("White Found");
+        move_backward(sensor_data,60,100);
+        color = 2;
+        }
+        else{
+            color = 0;
+        }
+    }   
+    return color;
+}
 
 
 
