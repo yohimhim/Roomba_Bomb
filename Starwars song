@@ -1,0 +1,14 @@
+//star wars
+//
+//    unsigned char notes[9] = {
+//           67, 67, 67, 63, 70, 67, 63, 70, 67
+//       };
+//
+//       // Durations (1/64 second units); 32 = 0.5 sec, 16 = 0.25 sec
+//       unsigned char durations[9] = {
+//           32, 32, 32, 24, 8, 32, 24, 8, 48
+//       };
+//
+//       // Load song to slot 0
+//       oi_loadSong(0, 9, notes, durations);
+//       oi_playSong(0)
