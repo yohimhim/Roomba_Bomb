@@ -6,7 +6,7 @@ def ping_table_data(parent_frame):
     absolute_path = os.path.dirname(__file__) # Absolut path to this python script
     relative_path = "./"   # Path to sensor data file relative to this python script (./ means data file is in the same directory as this python script
     full_path = os.path.join(absolute_path, relative_path) # Full path to sensor data file
-    filename = 'mock-cybot-sensor-scan.txt' # Name of sensor data file
+    filename = 'sensor-scan.txt' # Name of sensor data file
 
     # Open file containing CyBot sensor scan from 0 - 180 degrees
     file_object = open(full_path + filename,'r') # Open the file: file_object is just a variable for the file "handler" returned by open()

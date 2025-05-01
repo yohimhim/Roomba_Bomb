@@ -10,7 +10,7 @@ def cybot_display_plot():
     absolute_path = os.path.dirname(__file__) # Absoult path to this python script
     relative_path = "./"   # Path to sensor data file relative to this python script (./ means data file is in the same directory as this python script
     full_path = os.path.join(absolute_path, relative_path) # Full path to sensor data file
-    filename = 'mock-cybot-sensor-scan.txt' # Name of sensor data file
+    filename = 'sensor-scan.txt' # Name of sensor data file
 
     # angle_degrees: a vector (i.e., array of numbers) for which each element is an angle at which the sensor makes a distance measurement.
     # Units: degrees
