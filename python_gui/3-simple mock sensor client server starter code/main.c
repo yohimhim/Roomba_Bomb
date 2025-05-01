@@ -123,6 +123,8 @@ enum driver_state_t state = MANUAL;
                 {
                     case 'w':
                         oi_setWheels(100, 100);
+                        //make movement functions that turn clockwise(x degrees), and move forward (x centemeters)
+                        //
                         break;
                     case 'a':
                         oi_setWheels(100, -100);

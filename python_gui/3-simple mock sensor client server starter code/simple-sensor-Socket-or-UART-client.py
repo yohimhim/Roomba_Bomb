@@ -49,10 +49,7 @@ while True:
                         print(f"Sending {char}")
                         cybot.write(send_message.encode())
 
-                        if char.lower() == 'q':
-                                break
-
-                        if char.lower() == 'm':
+                        if char.lower() == 'z':
                                 print("Requested Sensor scan from Cybot:\n")
                                 rx_message = bytearray(1) # Initialize a byte array
 
@@ -69,6 +66,19 @@ while True:
                                 print("Waiting for server reply\n")
                                 rx_message = cybot.readline()
                                 print("Got a message from serer: " + rx_message.decode() + "\n")
+                        # if char.lower() == 'z':
+                        #         print("Requested Sensor scan from Cybot:\n")
+                                
+                        #         with open(full_path + filename, 'w') as file_object:
+                        #                 while True:
+                        #                         rx_message = cybot.readline()
+                        #                         decoded_message = rx_message.decode()
+                                                
+                        #                         if decoded_message.strip() == "END": #IT ENDS WHEN IT SEES 'END' SO CHANGE IT WHEN I GET BACK FROM 310!!!
+                        #                                 break
+                                                
+                        #                         file_object.write(decoded_message)
+                        #                         print(decoded_message)
 
 print("Client exiting, closing connections...")
 time.sleep(2)
