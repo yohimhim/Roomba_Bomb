@@ -1,6 +1,5 @@
 # Tkinter GUI library
 import tkinter as tk
-from turtle import update 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 #CyBot plot imports
 import cybot_scan_data
@@ -96,7 +95,6 @@ def draw_gui():
     resized_image = original_image.resize((300, 300), Image.Resampling.LANCZOS)
     photo = ImageTk.PhotoImage(resized_image)
     
-    # Store photo reference to prevent garbage collection
     # This line fixed image not appearing
     cybot_sensors.photo = photo
 

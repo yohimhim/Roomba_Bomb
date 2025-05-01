@@ -26,7 +26,10 @@ def cybot_display_plot():
 
     # Open file containing CyBot sensor scan from 0 - 180 degrees
     file_object = open(full_path + filename,'r') # Open the file: file_object is just a variable for the file "handler" returned by open()
+    line1 = file_object.readline()
     file_header = file_object.readline() # Read and store the header row (i.e., 1st row) of the file into file_header
+    line3 = file_object.readline()
+
     file_data = file_object.readlines()  # Read the rest of the lines of the file into file_data
     file_object.close() # Important to close file one you are done with it!!
 
