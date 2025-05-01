@@ -47,9 +47,10 @@ enum driver_state_t state = MANUAL;
 
     while(1)
     {
+        oi_update(sensor_data);
+
         get_cliff(sensor_data); // always check for cliffs
 
-        uint16_t cliffRaw = get_cliff(sensor_data); // set raw value to a variable for the cliff
 
         //flag_monitor(sensor_data);
         if (state == AUTO){
