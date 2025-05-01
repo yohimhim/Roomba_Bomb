@@ -9,6 +9,7 @@
 #include "lcd.h"
 #include "open_interface.h"
 #include "Timer.h"
+#include <math.h>
 
 
 /**
@@ -66,7 +67,32 @@ void manual_stop(){
 
 
 
+ //Turns the bot clockwise by the desired angle
+ void turn_clockwise(oi_t *sensor, double degrees){
+     lcd_init();
+     oi_setWheels(-50, 50);
+     oi_update(sensor);
+     double angle = 0;
+     degrees *= -1;
+     while(angle > degrees){
 
+         oi_update(sensor);
+         angle += sensor->angle;
+         }
+     oi_setWheels(0, 0);
+ }
+
+ void turn_counterclockwise(oi_t *sensor, double degrees){
+     oi_setWheels(50, -50);
+     oi_update(sensor);
+     double angle = 0;
+     while(angle < degrees){
+
+         oi_update(sensor);
+         angle += sensor->angle;
+         }
+     oi_setWheels(0, 0);
+ }
 
  void move_right (oi_t *sensor_data, double degrees){
     // the following code could be put in function move_forward()
@@ -106,8 +132,32 @@ void manual_stop(){
 
  }
 
+ int get_cliff(oi_t *sensor){
+    oi_update(sensor);
 
 
+    if(sensor ->cliffLeft){
+
+        return sensor ->cliffLeftSignal;
+    }
+    else if(sensor ->cliffRight){
+
+        return sensor ->cliffRightSignal;
+    }
+    else if(sensor ->cliffFrontLeft){
+
+        return sensor ->cliffFrontLeftSignal;
+    }
+    else if(sensor ->cliffFrontRight){
+
+        return sensor ->cliffFrontRightSignal;
+    }
+    else{
+
+     return 0;
+
+    }
+ }
 
 
 
