@@ -95,18 +95,62 @@ void manual_stop(){
     oi_setWheels(0,0); //stop
     return;
 
-
-}
-
- void square(oi_t *sensor_data){
-
-
-
-
-
  }
 
 
+ int get_cliff(oi_t *sensor_data){
+    oi_update(sensor_data);
+    int color;
+
+
+    if(sensor_data ->cliffLeft || sensor_data ->cliffRight || sensor_data ->cliffFrontLeft || sensor_data ->cliffFrontRight){ //if the sensor is triggered
+        // set variables for Raw data
+        oi_setWheels(0,0);
+        oi_update(sensor_data);
+
+        int csR  = sensor_data->cliffRightSignal;
+        int csFR = sensor_data->cliffFrontRightSignal;
+        int csL  = sensor_data->cliffLeftSignal;
+        int csFL = sensor_data->cliffFrontLeftSignal;
+
+        if ( (csR  < 200 ||csL  < 200 ||csFR < 200 ||csFL < 200) ) { // check for black tape
+
+        lcd_printf("Black Found");
+
+
+        color = 1;
+        }   else if ( csR  >= 2700 ||csL  >= 2700 ||csFR >= 2700 ||csFL >= 2700 ) { // check for white tape
+
+        lcd_printf("White Found");
+        color = 2;
+        }
+        else{
+            color = 0;
+        }
+    }
+    return color;
+
+ }
+
+ int get_bumper(oi_t *sensor_data){
+     oi_update(sensor_data);
+     int bumpedLeft;
+     int bumpedRight;
+
+     if (sensor_data->bumpLeft){
+         oi_setWheels(0,0); //stop
+         bumpedLeft = 1;
+     }
+     else if (sensor_data->bumpRight){
+         oi_setWheels(0,0); //stop
+        bumpedRight = 1;
+     }
+     else {
+         bumpedLeft = 0;
+         bumpedRight = 0;
+     }
+
+ }
 
 
 

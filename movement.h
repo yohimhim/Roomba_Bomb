@@ -27,5 +27,7 @@ void move_right(oi_t *sensor_data, double angle);
 void move_left(oi_t *sensor_data, double angle);
 void move (oi_t *sensor_data, double distance_mm, double wheel1, double wheel2);
 void move_backward (oi_t *sensor_data, double distance_mm);
+int get_cliff(oi_t *sensor_data);
+
 
 #endif /* MOVEMENT_H_ */
