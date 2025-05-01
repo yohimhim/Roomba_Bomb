@@ -1,7 +1,6 @@
 # Tkinter GUI library
 import tkinter as tk
 from turtle import update 
-import matplotlib.animation as animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 #CyBot plot imports
 import cybot_scan_data
@@ -9,7 +8,7 @@ import cybot_table_data
 import cybot_sensor_data
 from PIL import Image, ImageTk
 import pylab as pl
-import time
+import math
 
 cy_x = 0
 cy_y = 0
@@ -111,7 +110,7 @@ def fetch_data():
     fig, ax = cybot_scan_data.cybot_display_plot()
 
     # Add initial Cybot at 0, 0
-    circle = pl.Circle((cy_x, cy_y), 4, transform=ax.transData._b, color="blue", alpha=0.4)
+    circle = pl.Circle((cy_x, cy_y), 35, transform=ax.transData._b, color="blue", alpha=0.4)
     ax.add_artist(circle)
 
     # Add plot to frame: polar_plot
@@ -126,17 +125,22 @@ def fetch_data():
 def cybot_animate():
     global cy_x, cy_y, circle, canvas
 
-    cy_x += 1
-    cy_y += 1
+    cy_x += 2
+    cy_y = 2
 
+    #Converting cartesian coordinates to polar coordinates
+    # r = math.sqrt((cy_x * cy_x) + (cy_y * cy_y))
+    # theta = math.atan2(cy_y, cy_x)
+    # theta_degrees = math.degrees(theta)
+
+
+    #if circle is created
     if circle:
-        circle.set_center((cy_x, cy_y))  # Move circle
+        circle.set_center((cy_x, cy_y))  # Move cybot
 
     canvas.draw()  # Redraw canvas with new coordinates
 
     window.after(1000, cybot_animate)
-
-
 
 
 #Main
