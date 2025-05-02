@@ -10,6 +10,8 @@
 #include "open_interface.h"
 #include "Timer.h"
 #include "main.h"
+#include "uart-interrupt.h"
+
 
 
 /**
@@ -145,6 +147,9 @@ void manual_stop(){
 
  int get_cliff(oi_t *sensor_data){
 
+     char data[64];
+
+
      //ZOOOOMMMM NOISE
       //
      unsigned char phantom_notes[16] = {
@@ -177,6 +182,7 @@ void manual_stop(){
     int color;
 
 
+
         // set variables for Raw data
         oi_update(sensor_data);
 
@@ -196,28 +202,80 @@ void manual_stop(){
         oi_update(sensor_data);
         oi_setWheels(0,0); //stop
 
-        if(csFL < 200 || csFR < 200){
+        if(csFL < 200 && csFR < 200){
             oi_setWheels(250,250);
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
+            sprintf(data, "Cliff:2,3");
+            uart_sendStr(data);
 
-        }else if(csR < 200){
-            turn_clockwise(sensor_data,70);
+
+
+        }else if(csL < 200 && csFL < 200){
+            turn_counterclockwise(sensor_data,45);
             oi_setWheels(250,250);
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
+            sprintf(data,"Cliff:1,2");
+            uart_sendStr(data);
 
 
-        }else if(csL < 200){
+        }else if(csR < 200 && csFR < 200){
+            turn_clockwise(sensor_data,45);
+            oi_setWheels(250,250);
+            timer_waitMillis(1500);
+            oi_setWheels(0,0);
+            oi_update(sensor_data);
+            sprintf(data,"Cliff:3,4");
+            uart_sendStr(data);
+
+        }
+        else if(csFL < 200){
+            turn_counterclockwise(sensor_data,20);
+            oi_setWheels(250,250);
+            timer_waitMillis(1500);
+            oi_setWheels(0,0);
+            oi_update(sensor_data);
+            sprintf(data,"Cliff:2");
+            uart_sendStr(data);
+
+
+        }else if(csFR < 200){
+            turn_clockwise(sensor_data,20);
+            oi_setWheels(250,250);
+            timer_waitMillis(1500);
+            oi_setWheels(0,0);
+            oi_update(sensor_data);
+            sprintf(data,"Cliff:3");
+            uart_sendStr(data);
+
+
+        }
+        else if(csL < 200 ){
             turn_counterclockwise(sensor_data,70);
             oi_setWheels(250,250);
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
+            sprintf(data,"Cliff:1");
+            uart_sendStr(data);
+
+
+
+        }else if(csR < 200 ){
+            turn_clockwise(sensor_data,70);
+            oi_setWheels(250,250);
+            timer_waitMillis(1500);
+            oi_setWheels(0,0);
+            oi_update(sensor_data);
+            sprintf(data,"Cliff:4");
+            uart_sendStr(data);
+
 
         }
+
         oi_play_song(1);
         timer_waitMillis(3000);
 
@@ -228,6 +286,42 @@ void manual_stop(){
         else if ( csR  >= 2690 ||csL  >= 2690 ||csFR >= 2690 ||csFL >= 2690) {// check for white tape
 
         lcd_printf("White Found");
+
+        oi_update(sensor_data);
+          oi_setWheels(0,0); //stop
+
+          if(csL >= 2690 && csFL >=2690){
+              sprintf(data,"Cliff:2,3");
+              uart_sendStr(data);
+
+          }else if(csL >= 2690 && csFL >=2690){
+              sprintf(data,"Cliff:1,2");
+              uart_sendStr(data);
+
+          }else if(csR >= 2690 && csFR >= 2690){
+              sprintf(data,"Cliff:3,4");
+              uart_sendStr(data);
+
+          }
+          else if(csFL >= 2690){
+              sprintf(data,"Cliff:2");
+              uart_sendStr(data);
+
+          }else if(csFR >= 2690){
+              sprintf(data,"Cliff:3");
+              uart_sendStr(data);
+
+          }
+          else if(csL >= 2690 ){
+              sprintf(data,"Cliff:1");
+              uart_sendStr(data);
+
+          }else if(csR >= 2690 ){
+              sprintf(data,"Cliff:4");
+              uart_sendStr(data);
+
+          }
+
         color = 2;
         oi_update(sensor_data);
         oi_setWheels(-70,-70);
@@ -251,6 +345,8 @@ void manual_stop(){
  int get_bumper(oi_t *sensor_data){
      oi_update(sensor_data);
      int bumper;
+     char data[64];
+
 
 
      if (sensor_data->bumpLeft){ //Left =1
@@ -258,12 +354,16 @@ void manual_stop(){
 
          move_backward (sensor_data, 60);
          bumper = 1;
+         sprintf(data,"Bump:Left");
+         uart_sendStr(data);
      }
      else if (sensor_data->bumpRight){ //RIGHT = 2
          oi_update(sensor_data);
 
          move_backward (sensor_data, 60);
          bumper = 2;
+         sprintf(data,"Bump:Right");
+         uart_sendStr(data);
      }
      else{
          bumper = 0;
