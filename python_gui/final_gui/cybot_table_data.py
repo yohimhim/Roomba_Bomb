@@ -2,7 +2,7 @@ from tkinter import ttk
 #filepath import
 import os
 
-def ping_table_data(parent_frame, angle, ping_data, ir_data):
+def ping_table_data(tree, parent_frame, angle, ping_data, ir_data):
     # absolute_path = os.path.dirname(__file__) # Absolut path to this python script
     # relative_path = "./"   # Path to sensor data file relative to this python script (./ means data file is in the same directory as this python script
     # full_path = os.path.join(absolute_path, relative_path) # Full path to sensor data file
@@ -24,9 +24,10 @@ def ping_table_data(parent_frame, angle, ping_data, ir_data):
     #     angle_degrees.append(float(data[0]))  # Column 0 holds the angle at which distance was measured
     #     ping.append(float(data[1]))       # Column 1 holds the distance that was measured at a given angle 
     #     ir.append(float(data[2]))
-
+    for item in tree.get_children(): #clear table data
+        tree.delete(item)
     # Create Treeview
-    tree = ttk.Treeview(parent_frame, columns=("Angle", "Ping", "IR"), show="headings")
+    #tree = ttk.Treeview(parent_frame, columns=("Angle", "Ping", "IR"), show="headings")
     tree.heading("Angle", text="Angle (degrees)")
     tree.heading("Ping", text="Ping (cm)")
     tree.heading("IR", text="IR (cm)")

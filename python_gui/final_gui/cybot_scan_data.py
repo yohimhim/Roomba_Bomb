@@ -2,12 +2,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pylab as pl
 
 #filepath import
 import os
 
 
-def cybot_display_plot(parent_frame, angle, ping_data):
+def cybot_display_plot(fig, ax, parent_frame, angle, ping_data, x, y):
     # absolute_path = os.path.dirname(__file__) # Absoult path to this python script
     # relative_path = "./"   # Path to sensor data file relative to this python script (./ means data file is in the same directory as this python script
     # full_path = os.path.join(absolute_path, relative_path) # Full path to sensor data file
@@ -42,6 +43,7 @@ def cybot_display_plot(parent_frame, angle, ping_data):
     #     angle_degrees.append(float(data[0]))  # Column 0 holds the angle at which distance was measured
     #     distance.append(float(data[1]))       # Column 1 holds the distance that was measured at a given angle 
 
+    ax.cla() #clear plot and redraw
 
     # Convert python sequence (list of strings) into a numpy array
     angle_degrees = np.array(angle_degrees) # Avoid "TypeError: can't multiply sequence by non-int of type float"
@@ -50,7 +52,7 @@ def cybot_display_plot(parent_frame, angle, ping_data):
     angle_radians = (np.pi/180) * angle_degrees # Convert degrees into radians
 
     # Create a polar plot to be returned
-    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}) # One subplot of type polar
+    #fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}) # One subplot of type polar
     ax.plot(angle_radians, distance, color='r', linewidth=4.0)  # Plot distance verse angle (in radians), using red, line width 4.0
     ax.set_xlabel('Distance (cm)', fontsize = 10.0)  # Label x axis
     ax.set_ylabel('Angle (degrees)', fontsize = 10.0) # Label y axis
@@ -68,6 +70,9 @@ def cybot_display_plot(parent_frame, angle, ping_data):
     ax.set_title("POLAR PLOT", size=14, y=1.0, pad=-24) 
     canvas = FigureCanvasTkAgg(fig, master=parent_frame)
     canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
-    canvas.draw()
 
-    return fig, ax
+    # Add initial Cybot at 0, 0
+    mock_cybot = pl.Circle((x, y), 35, transform=ax.transData._b, color="blue", alpha=0.4)
+    ax.add_artist(mock_cybot)
+
+    canvas.draw()

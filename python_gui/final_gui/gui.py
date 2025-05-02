@@ -43,14 +43,11 @@ cybot = cybot_socket.makefile("rbw", buffering=0)  # makefile creates a file obj
     
 # Data Tables
 angle_degrees = []
-angle_radians = []
 ping = []
 ir = []
 
 cy_x = 0
 cy_y = -30
-circle = None
-ax = None
 canvas = None
 
 def main():
@@ -65,14 +62,14 @@ def main():
 
 def update_data():
     socket_data()
-    window.after(1, update_data)
+    window.after(10, update_data)
 
 def draw_gui():
     # Made global window so quit function (send_quit) can access
     global window
     #Make global frames so that data can be displayed from data_init()
     global scan_data, polar_plot, cybot_sensors
-    global fig, ax, canvas, circle, tree
+    global fig, ax, canvas, mock_cybot, tree
 
 
     window = tk.Tk() # Create a Tk GUI Window
@@ -139,17 +136,15 @@ def draw_gui():
     bump_left_label.grid(row=5, column=0, sticky="w", padx=2, pady=2)
 
     #Add initial polar plot
-    fig, ax = cybot_scan_data.cybot_display_plot(polar_plot, angle_degrees, ping)
+    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}) # One subplot of type polar
+    cybot_scan_data.cybot_display_plot(fig, ax, polar_plot, angle_degrees, ping, 0, -30)
 
     #Add initial scan data tree
-    tree = cybot_table_data.ping_table_data(scan_data, angle_degrees, ping, ir)
-
-    # Add initial Cybot at 0, 0
-    circle = pl.Circle((cy_x, cy_y), 35, transform=ax.transData._b, color="blue", alpha=0.4)
-    ax.add_artist(circle)
+    tree = ttk.Treeview(scan_data, columns=("Angle", "Ping", "IR"), show="headings")
+    cybot_table_data.ping_table_data(tree, scan_data, angle_degrees, ping, ir)
 
     #Load and display punching cy!
-    original_image = Image.open("python_gui/final_gui/punchingcy.jpg")
+    original_image = Image.open("U:/CPRE2880/FinalProject/Roomba_Bomb/python_gui/final_gui/punchingcy.jpg")
     resized_image = original_image.resize((300, 300), Image.Resampling.LANCZOS)
     photo = ImageTk.PhotoImage(resized_image)
     # This line fixed image not appearing
@@ -161,6 +156,7 @@ def draw_gui():
 def socket_data():
     global scan_data, polar_plot
     global fig, ax, tree 
+    global cy_x, cy_y
     event = keyboard.read_event()
 
     if event.event_type == keyboard.KEY_DOWN: #react once the key is pressed - not when it's released
@@ -172,6 +168,9 @@ def socket_data():
                     cybot.write(send_message.encode())
 
                     if char.lower() == 'z':
+                            angle_degrees.clear()
+                            ping.clear()
+                            ir.clear()
                             print("Requested Sensor scan from Cybot:\n")
                             rx_message = bytearray(1) # Initialize a byte array
 
@@ -198,16 +197,21 @@ def socket_data():
                                 angle_degrees.append(float(data[0]))  # Column 0 holds the angle at which distance was measured
                                 ping.append(float(data[1]))       # Column 1 holds the distance that was measured at a given angle 
                                 ir.append(float(data[2]))
-
-                            ax.cla() #clear plot and redraw
-                            cybot_scan_data.cybot_display_plot(fig, ax, polar_plot, angle_degrees, ping)
-                            for item in tree.get_children(): #clear table data
-                                tree.delete(item)
+                            ax.cla()
+                            cy_y = -30
+                            cy_x = 0
+                            cybot_scan_data.cybot_display_plot(fig, ax, polar_plot, angle_degrees, ping, cy_x, cy_y)
                             cybot_table_data.ping_table_data(tree, scan_data, angle_degrees, ping, ir)
+                    elif char.lower() == 'w':
+                        rx_message = cybot.readline()
+                        print("Got a message from server: " + rx_message.decode() + "\n")
+                        cy_y += 5
+                        cy_x += 0
+                        cybot_scan_data.cybot_display_plot(fig, ax, polar_plot, angle_degrees, ping, cy_x, cy_y)
                     else:
                             print("Waiting for server reply\n")
                             rx_message = cybot.readline()
-                            print("Got a message from serer: " + rx_message.decode() + "\n")
+                            print("Got a message from server: " + rx_message.decode() + "\n")
                     # if char.lower() == 'z':
                     #         print("Requested Sensor scan from Cybot:\n")
                             
@@ -221,26 +225,6 @@ def socket_data():
                                             
                     #                         file_object.write(decoded_message)
                     #                         print(decoded_message)
-
-def cybot_animate(x, y):
-    global cy_x, cy_y, circle, canvas
-
-    cy_x += x
-    cy_y += y
-
-    #Converting cartesian coordinates to polar coordinates
-    # r = math.sqrt((cy_x * cy_x) + (cy_y * cy_y))
-    # theta = math.atan2(cy_y, cy_x)
-    # theta_degrees = math.degrees(theta)
-
-
-    #if circle is created
-    if circle:
-        circle.set_center((cy_x, cy_y))  # Move cybot
-
-    canvas.draw()  # Redraw canvas with new coordinates
-
-    window.after(1000, cybot_animate)
 
 
 main()
