@@ -22,7 +22,7 @@ void manual_stop(void);
 /**
  * Autonomous Movement
  */
-int move_forward (oi_t *sensor_data, double distance_mm);
+int move_forward (oi_t *sensor_data, double distance_mm, int state);
 void turn_clockwise(oi_t *sensor, double degrees);
 void turn_counterclockwise(oi_t *sensor, double degrees);
 void move_right(oi_t *sensor_data, double angle);

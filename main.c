@@ -85,15 +85,7 @@ enum driver_state_t state = MANUAL;
 
 
                 //Return if it reaches the object
-                if (distance != 0 && sum >= (distance - 5)){
-                    lcd_clear();
-                     lcd_printf("dist %f : %f", distance, sum);
-                     oi_play_song(0);
-                     timer_waitMillis(3000);
-                    state = MANUAL;
 
-                    break;
-                }
 
                 sum = 0;
                 distance = 0;
@@ -130,7 +122,7 @@ enum driver_state_t state = MANUAL;
                      lcd_printf("first: %lf\nsecond: %lf",firstScan, secondScan);
 
                      //compare the scans
-                     if(firstScan > secondScan){
+                     if(firstScan >= secondScan){
                           //Turn 180 degrees
                         oi_setWheels(-100, 100);
                         timer_waitMillis(3200);
@@ -147,33 +139,37 @@ enum driver_state_t state = MANUAL;
                             }
 
 
-                     distance = ir_scan() * 3;
+                     distance = get_largest_dist();
+                     lcd_printf("Dist: %lf", distance);
 
 
 
 
                      if (angleToObject < 90){ //turn to the right
                          angleToObject =  90 - angleToObject; //Angle to move the bot right
-                         move_right (sensor_data, angleToObject);
+                         turn_clockwise(sensor_data, angleToObject);
                      }
                      else if (angleToObject > 90) {
                          angleToObject = angleToObject - 90;  //Angle to move the bot left
-                         move_left (sensor_data, angleToObject);
+                         turn_counterclockwise(sensor_data, angleToObject);
                      }
                      angleToObject = 0;
 
 
 
-                oi_setWheels(100,100);
-                while(sum < distance -5){
-                    oi_update(sensor_data);
-                    flag_monitor(sensor_data);
-                    sum += sensor_data->distance;
-                }
-                oi_setWheels(0,0);
-                }
+                     move_forward(sensor_data, distance * 8, 1);
+
+                     lcd_clear();
+                     lcd_printf("dist %f : %f", distance, sum);
+                     oi_play_song(0);
+                     timer_waitMillis(3000);
+                     state = MANUAL;
+
+                     break;
 
         }
+
+    }
 
         else if (state == MANUAL){
 
@@ -198,7 +194,7 @@ enum driver_state_t state = MANUAL;
                 {
                 case 'w':
 
-                    mode = move_forward(sensor_data, 40); //10cm
+                    mode = move_forward(sensor_data, 40, 0); //10cm
                     if(mode == 1){
                         state = AUTO;
                         break;

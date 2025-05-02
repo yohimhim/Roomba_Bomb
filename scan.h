@@ -15,6 +15,7 @@ typedef struct obj {
     double distance;
     double TRUEWIDTH;
 } obj;
+
  struct Objects{
     int linear_distance;
     int deg_count;
@@ -24,10 +25,9 @@ typedef struct obj {
     float angle;
 };
 
-float ping_scan(oi_t *sensor_data);
 int ir_scan();
 int obj_distance(double avg_ir);
-float get_largest_dist();
+int get_largest_dist();
 float get_largest_width();
 float run_autonomous_scan(oi_t *sensor_data, cyBOT_Scan_t *scan);
 

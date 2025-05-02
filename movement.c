@@ -31,27 +31,30 @@ void manual_stop(){
     oi_setWheels(0, 0);
 }
 
- int move_forward (oi_t *sensor_data, double distance){
+ int move_forward (oi_t *sensor_data, double distance, int state){
      int color = 0;
     int bumper = 0;
     int mode =0;
+
     // the following code could be put in function move_forward()
     double sum = 0; // distance member in oi_t struct is type double
     oi_setWheels(100,100); //move forward at full speed
     while (sum < distance) {
 
     oi_update(sensor_data); //check sensors
-    color = get_cliff(sensor_data); // always check for cliffs
-    bumper = get_bumper(sensor_data);
-    if (color == 1){
-      mode =1;
-      return mode;
-        break;
-    }
+    if(state == 0){
+        color = get_cliff(sensor_data); // always check for cliffs
+            bumper = get_bumper(sensor_data);
+            if (color == 1){
+              mode =1;
+              return mode;
+                break;
+            }
 
-    if (!(bumper || color) == 0){
-        return mode;
-        break;
+            if (!(bumper || color) == 0){
+                return mode;
+                break;
+            }
     }
 
     sum += sensor_data -> distance; // use -> notation since pointer
@@ -222,7 +225,7 @@ void manual_stop(){
 
         color = 1;
         }
-        else if ( csR  >= 2690 ||csL  >= 2690 ||csFR >= 2690 ||csFL >= 2690 ) {// check for white tape
+        else if ( csR  >= 2690 ||csL  >= 2690 ||csFR >= 2690 ||csFL >= 2690) {// check for white tape
 
         lcd_printf("White Found");
         color = 2;
@@ -231,6 +234,7 @@ void manual_stop(){
         timer_waitMillis(1000);
         oi_setWheels(0,0);
         oi_play_song(2);
+
 
 
 
