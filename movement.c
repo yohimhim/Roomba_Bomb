@@ -9,6 +9,7 @@
 #include "lcd.h"
 #include "open_interface.h"
 #include "Timer.h"
+#include "main.h"
 
 
 /**
@@ -30,24 +31,36 @@ void manual_stop(){
     oi_setWheels(0, 0);
 }
 
- void move_forward (oi_t *sensor_data, double distance){
+ int move_forward (oi_t *sensor_data, double distance){
+     int color = 0;
+    int bumper = 0;
+    int mode =0;
     // the following code could be put in function move_forward()
     double sum = 0; // distance member in oi_t struct is type double
     oi_setWheels(100,100); //move forward at full speed
     while (sum < distance) {
 
     oi_update(sensor_data); //check sensors
-    sum += sensor_data -> distance; // use -> notation since pointer
-    if (sensor_data->bumpRight || sensor_data->bumpLeft){
+    color = get_cliff(sensor_data); // always check for cliffs
+    bumper = get_bumper(sensor_data);
+    if (color == 1){
+      mode =1;
+      return mode;
         break;
     }
 
+    if (!(bumper || color) == 0){
+        return mode;
+        break;
+    }
+
+    sum += sensor_data -> distance; // use -> notation since pointer
     }
     oi_setWheels(0,0); //stop
-
-
+    return mode;
 
 }
+
 
 
  void move_backward (oi_t *sensor_data, double distance){
@@ -65,6 +78,46 @@ void manual_stop(){
  }
 
 
+ //Turns the bot clockwise by the desired angle
+  void turn_clockwise(oi_t *sensor, double degrees){
+      int color = 0;
+       int bumper = 0;
+      lcd_init();
+      oi_setWheels(-50, 50);
+      oi_update(sensor);
+      double angle = 0;
+      degrees *= -1;
+      while(angle > degrees){
+
+          oi_update(sensor);
+          get_cliff(sensor); // always check for cliffs
+              get_bumper(sensor);
+
+              if (!(bumper || color) == 0){
+                     break;
+                 }
+          angle += sensor->angle;
+          }
+      oi_setWheels(0, 0);
+  }
+
+  void turn_counterclockwise(oi_t *sensor, double degrees){
+      int color = 0;
+           int bumper = 0;
+      oi_setWheels(50, -50);
+      oi_update(sensor);
+      double angle = 0;
+      while(angle < degrees){
+          oi_update(sensor);
+          get_cliff(sensor); // always check for cliffs
+          get_bumper(sensor);
+          if (!(bumper || color) == 0){
+              break;
+          }
+          angle += sensor->angle;
+          }
+      oi_setWheels(0, 0);
+  }
 
 
 
@@ -103,9 +156,7 @@ void manual_stop(){
     int color;
 
 
-    if(sensor_data ->cliffLeft || sensor_data ->cliffRight || sensor_data ->cliffFrontLeft || sensor_data ->cliffFrontRight){ //if the sensor is triggered
         // set variables for Raw data
-        oi_setWheels(0,0);
         oi_update(sensor_data);
 
         int csR  = sensor_data->cliffRightSignal;
@@ -113,45 +164,62 @@ void manual_stop(){
         int csL  = sensor_data->cliffLeftSignal;
         int csFL = sensor_data->cliffFrontLeftSignal;
 
+        oi_update(sensor_data);
+
         if ( (csR  < 200 ||csL  < 200 ||csFR < 200 ||csFL < 200) ) { // check for black tape
 
         lcd_printf("Black Found");
+        oi_update(sensor_data);
+        oi_setWheels(0,0); //stop
 
 
         color = 1;
-        }   else if ( csR  >= 2700 ||csL  >= 2700 ||csFR >= 2700 ||csFL >= 2700 ) { // check for white tape
+        }
+        else if ( csR  >= 2500 ||csL  >= 2500 ||csFR >= 2500 ||csFL >= 2500 ) {// check for white tape
 
         lcd_printf("White Found");
         color = 2;
+        oi_update(sensor_data);
+        oi_setWheels(-70,-70);
+        timer_waitMillis(1000);
+        oi_setWheels(0,0);
+
+
+
         }
         else{
             color = 0;
         }
-    }
+
     return color;
 
  }
 
  int get_bumper(oi_t *sensor_data){
      oi_update(sensor_data);
-     int bumpedLeft;
-     int bumpedRight;
+     int bumper;
 
-     if (sensor_data->bumpLeft){
-         oi_setWheels(0,0); //stop
-         bumpedLeft = 1;
+
+     if (sensor_data->bumpLeft){ //Left =1
+         oi_update(sensor_data);
+
+         move_backward (sensor_data, 60);
+         bumper = 1;
      }
-     else if (sensor_data->bumpRight){
-         oi_setWheels(0,0); //stop
-        bumpedRight = 1;
+     else if (sensor_data->bumpRight){ //RIGHT = 2
+         oi_update(sensor_data);
+
+         move_backward (sensor_data, 60);
+         bumper = 2;
      }
-     else {
-         bumpedLeft = 0;
-         bumpedRight = 0;
+     else{
+         bumper = 0;
      }
+
+     return bumper;
+
 
  }
-
 
 
 

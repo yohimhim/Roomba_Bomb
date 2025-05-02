@@ -16,7 +16,7 @@
 
 #warning "Possible unimplemented functions"
 
-enum driver_state_t state = AUTO;
+enum driver_state_t state = MANUAL;
 
 
     void main() {
@@ -68,8 +68,10 @@ enum driver_state_t state = AUTO;
     {
 
 
+
+
         oi_update(sensor_data);
-        get_bumper(sensor_data);
+
 
         //flag_monitor(sensor_data);
         if (state == AUTO){
@@ -131,7 +133,7 @@ enum driver_state_t state = AUTO;
                         timer_waitMillis(3200);
                         oi_setWheels(0, 0);
 
-                     } 
+                     }
                         float angleToObject = ping_scan(sensor_data);
                         flag_monitor(sensor_data);
 
@@ -173,7 +175,15 @@ enum driver_state_t state = AUTO;
         else if (state == MANUAL){
 
             while (state == MANUAL){
-                get_cliff(sensor_data); // always check for cliffs
+                oi_update(sensor_data);
+                int mode = 0;
+
+                //GET COLOR VALUES
+//                int csR  = sensor_data->cliffRightSignal;
+//                int csFR = sensor_data->cliffFrontRightSignal;
+//                int csL  = sensor_data->cliffLeftSignal;
+//                int csFL = sensor_data->cliffFrontLeftSignal;
+//                lcd_printf("L:%d FL:%d  FR:%d  R:%d ", csL, csFL, csFR, csR);
 
                 lcd_printf("we are in manual");
                 //MANUAL MODE DRIVING
@@ -181,39 +191,30 @@ enum driver_state_t state = AUTO;
                 //index = 0;  // Set index to the beginning of the command buffer
                 my_data = cyBot_getByte(); // Get first byte of the command from the Client
 
-
                 switch (my_data)
                 {
-                    case 'w':
-                        oi_setWheels(100, 100);
-                        break;
-                    case 'a':
-                        oi_setWheels(100, -100);
-                        break;
-                    case 's':
-                        oi_setWheels(-100, -100);
-                        break;
-                    case 'd':
-                        oi_setWheels(-100, 100);
-                        break;
-                    case 'f':
-                        oi_setWheels(0, 0);
-                        break;
-                    case 'm':
-                        //for scanning fully
-                        break;
-                    case 'q':
-                        //for scanning directly infront?
-                        /*
-                         *
-                         * Maybe import another scan library. Manual can use cyBot_Scan.h
-                         * and Auto can use their own scan.h?
-                         *
-                         */
-                        //cyBOT_Scan(90, scan)
-                        break;
-                    default:
-                        break;
+                case 'w':
+
+                    mode = move_forward(sensor_data, 40); //10cm
+                    if(mode == 1){
+
+                        state = AUTO;
+                    }
+                    break;
+                case 'a':
+                    turn_counterclockwise(sensor_data, 45);
+                    break;
+                case 's':
+                    move_backward(sensor_data, 40); //10cm
+                    break;
+                case 'd':
+                    turn_clockwise(sensor_data, 45);
+                    break;
+                case 'f':
+                    oi_setWheels(0, 0);
+                    break;
+                default:
+                    break;
                 }
             }
         }
@@ -277,6 +278,3 @@ void flag_monitor(oi_t *sensor_data){
     }
 
 }
-
-
-
