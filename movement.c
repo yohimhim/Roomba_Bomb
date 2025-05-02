@@ -80,8 +80,7 @@ void manual_stop(){
 
  //Turns the bot clockwise by the desired angle
   void turn_clockwise(oi_t *sensor, double degrees){
-      int color = 0;
-       int bumper = 0;
+
       lcd_init();
       oi_setWheels(-50, 50);
       oi_update(sensor);
@@ -90,30 +89,20 @@ void manual_stop(){
       while(angle > degrees){
 
           oi_update(sensor);
-          get_cliff(sensor); // always check for cliffs
-              get_bumper(sensor);
 
-              if (!(bumper || color) == 0){
-                     break;
-                 }
           angle += sensor->angle;
           }
       oi_setWheels(0, 0);
   }
 
   void turn_counterclockwise(oi_t *sensor, double degrees){
-      int color = 0;
-           int bumper = 0;
+
       oi_setWheels(50, -50);
       oi_update(sensor);
       double angle = 0;
       while(angle < degrees){
           oi_update(sensor);
-          get_cliff(sensor); // always check for cliffs
-          get_bumper(sensor);
-          if (!(bumper || color) == 0){
-              break;
-          }
+
           angle += sensor->angle;
           }
       oi_setWheels(0, 0);
@@ -152,6 +141,35 @@ void manual_stop(){
 
 
  int get_cliff(oi_t *sensor_data){
+
+     //ZOOOOMMMM NOISE
+      //
+     unsigned char phantom_notes[16] = {
+         48, 55, 60, 48, 55, 60, 48, 55, 60, 62, 60, 58, 57, 58, 60, 48
+         // C3, G3, C4 (repeats), then climbs down and resolves
+     };
+
+     unsigned char phantom_durations[16] = {
+         16, 16, 16, 16, 16, 16, 16, 16, 16, 8, 8, 8, 8, 8, 12, 24
+     };
+
+             // Load song to slot 0
+             oi_loadSong(1, 16, phantom_notes, phantom_durations);
+
+             unsigned char error_notes[4] = {
+                 76, 67, 60, 50   //
+             };
+
+             unsigned char error_durations[4] = {
+                 6, 6, 6, 12      // quick drop then end low
+             };
+
+             oi_loadSong(2, 4, error_notes, error_durations);
+
+
+
+
+
     oi_update(sensor_data);
     int color;
 
@@ -169,13 +187,42 @@ void manual_stop(){
         if ( (csR  < 200 ||csL  < 200 ||csFR < 200 ||csFL < 200) ) { // check for black tape
 
         lcd_printf("Black Found");
+
+
+
         oi_update(sensor_data);
         oi_setWheels(0,0); //stop
+
+        if(csFL < 200 || csFR < 200){
+            oi_setWheels(250,250);
+            timer_waitMillis(1500);
+            oi_setWheels(0,0);
+            oi_update(sensor_data);
+
+        }else if(csR < 200){
+            turn_clockwise(sensor_data,70);
+            oi_setWheels(250,250);
+            timer_waitMillis(1500);
+            oi_setWheels(0,0);
+            oi_update(sensor_data);
+
+
+        }else if(csL < 200){
+            turn_counterclockwise(sensor_data,70);
+            oi_setWheels(250,250);
+            timer_waitMillis(1500);
+            oi_setWheels(0,0);
+            oi_update(sensor_data);
+
+        }
+        oi_play_song(1);
+        timer_waitMillis(3000);
+
 
 
         color = 1;
         }
-        else if ( csR  >= 2500 ||csL  >= 2500 ||csFR >= 2500 ||csFL >= 2500 ) {// check for white tape
+        else if ( csR  >= 2690 ||csL  >= 2690 ||csFR >= 2690 ||csFL >= 2690 ) {// check for white tape
 
         lcd_printf("White Found");
         color = 2;
@@ -183,6 +230,8 @@ void manual_stop(){
         oi_setWheels(-70,-70);
         timer_waitMillis(1000);
         oi_setWheels(0,0);
+        oi_play_song(2);
+
 
 
 

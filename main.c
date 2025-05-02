@@ -39,6 +39,7 @@ enum driver_state_t state = MANUAL;
     left_calibration_value = 1288000;
     double sum = 0;
     double distance = 0;
+    cyBOT_Scan_t scan;
 
     float firstScan;
     float secondScan;
@@ -62,6 +63,8 @@ enum driver_state_t state = MANUAL;
 
            // Load song to slot 0
            oi_loadSong(0, 9, notes, durations);
+
+
 
 
     while(1)
@@ -99,7 +102,7 @@ enum driver_state_t state = MANUAL;
 
 
 
-                     float angleToObject1 =  ping_scan(sensor_data); //Angle from first scan
+                     float angleToObject1 =  run_autonomous_scan(sensor_data,&scan); //Angle from first scan
                      firstScan = get_largest_width();
                      flag_monitor(sensor_data);
 
@@ -114,7 +117,7 @@ enum driver_state_t state = MANUAL;
                      timer_waitMillis(3200);
                      oi_setWheels(0, 0);
 
-                     float angleToObject2 =  ping_scan(sensor_data); //Angle from second scan
+                     float angleToObject2 =  run_autonomous_scan(sensor_data,&scan); //Angle from second scan
                      secondScan = get_largest_width();
                      flag_monitor(sensor_data);
 
@@ -134,7 +137,7 @@ enum driver_state_t state = MANUAL;
                         oi_setWheels(0, 0);
 
                      }
-                        float angleToObject = ping_scan(sensor_data);
+                        float angleToObject = run_autonomous_scan(sensor_data,&scan);
                         flag_monitor(sensor_data);
 
                               //If the scan is cancelled, we don't want it to calculate angles
@@ -178,14 +181,14 @@ enum driver_state_t state = MANUAL;
                 oi_update(sensor_data);
                 int mode = 0;
 
-                //GET COLOR VALUES
+//                GET COLOR VALUES
 //                int csR  = sensor_data->cliffRightSignal;
 //                int csFR = sensor_data->cliffFrontRightSignal;
 //                int csL  = sensor_data->cliffLeftSignal;
 //                int csFL = sensor_data->cliffFrontLeftSignal;
 //                lcd_printf("L:%d FL:%d  FR:%d  R:%d ", csL, csFL, csFR, csR);
 
-                lcd_printf("we are in manual");
+//                lcd_printf("we are in manual");
                 //MANUAL MODE DRIVING
                 flag_monitor(sensor_data);
                 //index = 0;  // Set index to the beginning of the command buffer
@@ -197,8 +200,9 @@ enum driver_state_t state = MANUAL;
 
                     mode = move_forward(sensor_data, 40); //10cm
                     if(mode == 1){
-
                         state = AUTO;
+                        break;
+
                     }
                     break;
                 case 'a':
@@ -226,11 +230,14 @@ enum driver_state_t state = MANUAL;
 
 void flag_monitor(oi_t *sensor_data){
     //start scan
+
+    cyBOT_Scan_t scan;
+
     //also includes cancel scan flag check within scan.c
     if (ping_scan_flag == 1){
         lcd_clear();
         lcd_puts("Scanning...");
-        float x = ping_scan(sensor_data);
+        float x = run_autonomous_scan(sensor_data, &scan);
         lcd_clear();
 
         ping_scan_flag = 0;
