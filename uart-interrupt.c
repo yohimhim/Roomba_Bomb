@@ -131,13 +131,6 @@ void UART1_Handler(void)
             //if byte received is a carriage return
             if (byte_received == 'z'){
                 ping_scan_flag = 1;
-            } else if (byte_received == 'x'){
-                ir_scan_flag = 1;
-            } else if (byte_received == 'c'){
-                cancel_scan_flag = 1;
-            } else if (byte_received == 'v'){
-                force_stop_flag = 1;
-                cancel_scan_flag = 1;
             } else if (byte_received == '1'){
                 auto_flag = 1;
             } else if (byte_received == '2'){

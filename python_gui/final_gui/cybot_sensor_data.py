@@ -91,9 +91,17 @@ def update_cybot_sensors(string, sensor):
         cliff3_var.set("Cliff 3 Sensor: " + string)
         cliff4_var.set("Cliff 4 Sensor: " + string)
         return
+    
+    elif sensor == "Bump:Left":
+        bump_left_var.set("Bump left Sensor: " + string)
+        return
+    elif sensor == "Bump:Right":
+        bump_right_var.set("Bump right Sensor: " + string)
+        return
 
     cliff1_var.set("Cliff 1 Sensor: " + string)
     cliff2_var.set("Cliff 2 Sensor: " + string)
     cliff3_var.set("Cliff 3 Sensor: " + string)
     cliff4_var.set("Cliff 4 Sensor: " + string)
-
+    bump_left_var.set("Bump left Sensor: " + string)
+    bump_right_var.set("Bump right Sensor: " + string)

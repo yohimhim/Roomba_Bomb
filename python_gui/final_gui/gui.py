@@ -229,6 +229,8 @@ def socket_data():
                             new_temp = temp.strip("u\n")
                             if new_temp == "Cliff:1" or new_temp == "Cliff:2" or new_temp == "Cliff:3" or new_temp == "Cliff:4" or new_temp == "Cliff:2,3" or new_temp == "Cliff:1,2" or new_temp == "Cliff:3,4":
                                 cybot_sensor_data.update_cybot_sensors("WHITE LINE", new_temp)
+                            elif new_temp == "Bump:Left" or new_temp == "Bump:Right":
+                                cybot_sensor_data.update_cybot_sensors("BUMPED", new_temp)
                             else:
                                 cybot_sensor_data.update_cybot_sensors("CLEAR", new_temp)
 
