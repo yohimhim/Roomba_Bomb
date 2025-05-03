@@ -45,14 +45,18 @@ cybot = cybot_socket.makefile("rbw", buffering=0)  # makefile creates a file obj
 angle_degrees = []
 ping = []
 ir = []
-
 cy_x = 0
 cy_y = -30
 canvas = None
+window = None
+scan_data = None
+polar_plot = None
+cybot_sensors = None
 
 def main():
     print("Press a key to send command to CyBot (press 'q' to quit)...")
     draw_gui()
+    window.update()
     update_data()
     window.mainloop()
     print("Client exiting, closing connections...")
@@ -62,7 +66,8 @@ def main():
 
 def update_data():
     socket_data()
-    window.after(10, update_data)
+    window.update()
+    window.after(100, update_data)
 
 def draw_gui():
     # Made global window so quit function (send_quit) can access
@@ -143,6 +148,9 @@ def draw_gui():
     tree = ttk.Treeview(scan_data, columns=("Angle", "Ping", "IR"), show="headings")
     cybot_table_data.ping_table_data(tree, scan_data, angle_degrees, ping, ir)
 
+    #Add initial cybot sensors
+    cybot_sensor_data.draw_cybot_sensors(cybot_sensors)
+
     #Load and display punching cy!
     original_image = Image.open("U:/CPRE2880/FinalProject/Roomba_Bomb/python_gui/final_gui/punchingcy.jpg")
     resized_image = original_image.resize((300, 300), Image.Resampling.LANCZOS)
@@ -151,12 +159,16 @@ def draw_gui():
     cybot_sensors.photo = photo
     image_label = tk.Label(cybot_sensors, image=photo)
     image_label.grid(row=0, column=1)
+    window.update()
+
 
 
 def socket_data():
-    global scan_data, polar_plot
+    global scan_data, polar_plot, window
     global fig, ax, tree 
     global cy_x, cy_y
+    global angle_degrees, ping, ir
+    window.update()
     event = keyboard.read_event()
 
     if event.event_type == keyboard.KEY_DOWN: #react once the key is pressed - not when it's released
@@ -185,8 +197,7 @@ def socket_data():
                             # For each line of the file split into columns, and assign each column to a variable
                             file_object = open(full_path + filename,'r') # Open the file: file_object is just a variable for the file "handler" returned by open()
                             line1 = file_object.readline()
-                            file_header = file_object.readline() # Read and store the header row (i.e., 1st row) of the file into file_header
-                            line3 = file_object.readline()
+                            #file_header = file_object.readline() # Read and store the header row (i.e., 1st row) of the file into file_header
                             file_data = file_object.readlines() # Read the rest of the lines of the file into file_data
                             file_object.close() # Important to close file one you are done with it!!
                             
@@ -202,29 +213,26 @@ def socket_data():
                             cy_x = 0
                             cybot_scan_data.cybot_display_plot(fig, ax, polar_plot, angle_degrees, ping, cy_x, cy_y)
                             cybot_table_data.ping_table_data(tree, scan_data, angle_degrees, ping, ir)
+                            window.update()
                     elif char.lower() == 'w':
                         rx_message = cybot.readline()
                         print("Got a message from server: " + rx_message.decode() + "\n")
                         cy_y += 5
                         cy_x += 0
                         cybot_scan_data.cybot_display_plot(fig, ax, polar_plot, angle_degrees, ping, cy_x, cy_y)
+                        window.update()
                     else:
                             print("Waiting for server reply\n")
                             rx_message = cybot.readline()
                             print("Got a message from server: " + rx_message.decode() + "\n")
-                    # if char.lower() == 'z':
-                    #         print("Requested Sensor scan from Cybot:\n")
-                            
-                    #         with open(full_path + filename, 'w') as file_object:
-                    #                 while True:
-                    #                         rx_message = cybot.readline()
-                    #                         decoded_message = rx_message.decode()
-                                            
-                    #                         if decoded_message.strip() == "END": #IT ENDS WHEN IT SEES 'END' SO CHANGE IT WHEN I GET BACK FROM 310!!!
-                    #                                 break
-                                            
-                    #                         file_object.write(decoded_message)
-                    #                         print(decoded_message)
+                            temp = rx_message.decode()
+                            new_temp = temp.strip("u\n")
+                            if new_temp == "Cliff:1" or new_temp == "Cliff:2" or new_temp == "Cliff:3" or new_temp == "Cliff:4" or new_temp == "Cliff:2,3" or new_temp == "Cliff:1,2" or new_temp == "Cliff:3,4":
+                                cybot_sensor_data.update_cybot_sensors("WHITE LINE", new_temp)
+                            else:
+                                cybot_sensor_data.update_cybot_sensors("CLEAR", new_temp)
+
+                            window.update()
 
 
 main()

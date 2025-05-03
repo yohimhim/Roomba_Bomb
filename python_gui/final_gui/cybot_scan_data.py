@@ -59,7 +59,7 @@ def cybot_display_plot(fig, ax, parent_frame, angle, ping_data, x, y):
     ax.xaxis.set_label_coords(0.5, 0.15) # Modify location of x axis label (Typically do not need or want this)
     ax.tick_params(axis='both', which='major', labelsize=6) # set font size of tick labels
     ax.set_rmax(2.5)                    # Saturate distance at 2.5 meters
-    ax.set_rticks([10, 20, 30, 40, 50, 60, 70, 80])   # Set plot "distance" tick marks at .5, 1, 1.5, 2, and 2.5 meters
+    ax.set_rticks([10, 20, 30, 40, 50, 60, 70, 80, 100, 120])   # Set plot "distance" tick marks at .5, 1, 1.5, 2, and 2.5 meters
     ax.set_rlabel_position(-22.5)     # Adjust location of the radial labels
     ax.set_thetamax(180)              # Saturate angle to 180 degrees
     ax.set_xticks(np.arange(0,np.pi+.1,np.pi/4)) # Set plot "angle" tick marks to pi/4 radians (i.e., displayed at 45 degree) increments
