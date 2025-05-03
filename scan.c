@@ -14,6 +14,7 @@ int ir_vals[] = {3758, 3308, 2305, 1852, 1621, 1463, 1312, 1207, 1125, 1069, 104
 int dist_cm[] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100};
 int current_ir_vals[16];
 float largest_Distance;
+float largest_Width;
 
 
 int ir_scan(){
@@ -232,6 +233,7 @@ float ping_scan(oi_t *sensor_data) {
          }
      }
      largest_Distance = object[largestIndex].distance;
+     largest_Width = object[largestIndex].width;
      cyBOT_Scan(object[largestIndex].angle, &scan);
      break;
      }
@@ -242,3 +244,4 @@ float ping_scan(oi_t *sensor_data) {
 
 
 float get_largest_dist() {return largest_Distance;}
+float get_largest_width() {return largest_Width;}

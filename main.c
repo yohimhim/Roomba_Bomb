@@ -16,7 +16,7 @@
 
 #warning "Possible unimplemented functions"
 
-enum driver_state_t state = MANUAL;
+enum driver_state_t state = AUTO;
 
 
     void main() {
@@ -40,14 +40,36 @@ enum driver_state_t state = MANUAL;
     double sum = 0;
     double distance = 0;
 
+    float firstScan;
+    float secondScan;
+
     int atBomb = 0;
 
     oi_setWheels(0,0);
 
 
+
+    //star wars
+    //
+        unsigned char notes[9] = {
+               67, 67, 67, 63, 70, 67, 63, 70, 67
+           };
+
+           // Durations (1/64 second units); 32 = 0.5 sec, 16 = 0.25 sec
+           unsigned char durations[9] = {
+               32, 32, 32, 24, 8, 32, 24, 8, 48
+           };
+
+           // Load song to slot 0
+           oi_loadSong(0, 9, notes, durations);
+
+
     while(1)
     {
 
+
+        oi_update(sensor_data);
+        get_bumper(sensor_data);
 
         //flag_monitor(sensor_data);
         if (state == AUTO){
@@ -58,9 +80,11 @@ enum driver_state_t state = MANUAL;
 
 
                 //Return if it reaches the object
-                if (distance != 0 && sum >= (distance - 10)){
+                if (distance != 0 && sum >= (distance - 5)){
                     lcd_clear();
                      lcd_printf("dist %f : %f", distance, sum);
+                     oi_play_song(0);
+                     timer_waitMillis(3000);
                     state = MANUAL;
 
                     break;
@@ -72,14 +96,51 @@ enum driver_state_t state = MANUAL;
                      oi_update(sensor_data);
 
 
-                     float angleToObject =  ping_scan(sensor_data); //Angle from scan
+
+                     float angleToObject1 =  ping_scan(sensor_data); //Angle from first scan
+                     firstScan = get_largest_width();
                      flag_monitor(sensor_data);
 
                      //If the scan is cancelled, we don't want it to calculate angles
-                     if(angleToObject == -1){
+                     if(angleToObject1 == -1){
                          cancel_scan_flag = 0;
                          break;
                      }
+
+                     //Turn 180 degrees
+                     oi_setWheels(-100, 100);
+                     timer_waitMillis(3200);
+                     oi_setWheels(0, 0);
+
+                     float angleToObject2 =  ping_scan(sensor_data); //Angle from second scan
+                     secondScan = get_largest_width();
+                     flag_monitor(sensor_data);
+
+                     //If the scan is cancelled, we don't want it to calculate angles
+                     if(angleToObject2 == -1){
+                        cancel_scan_flag = 0;
+                      break;
+                    }
+
+                     lcd_printf("first: %lf\nsecond: %lf",firstScan, secondScan);
+
+                     //compare the scans
+                     if(firstScan > secondScan){
+                          //Turn 180 degrees
+                        oi_setWheels(-100, 100);
+                        timer_waitMillis(3200);
+                        oi_setWheels(0, 0);
+
+                     } 
+                        float angleToObject = ping_scan(sensor_data);
+                        flag_monitor(sensor_data);
+
+                              //If the scan is cancelled, we don't want it to calculate angles
+                              if(angleToObject == -1){
+                                cancel_scan_flag = 0;
+                                break;
+                            }
+
 
                      distance = ir_scan() * 3;
 
@@ -99,7 +160,7 @@ enum driver_state_t state = MANUAL;
 
 
                 oi_setWheels(100,100);
-                while(sum < distance -10){
+                while(sum < distance -5){
                     oi_update(sensor_data);
                     flag_monitor(sensor_data);
                     sum += sensor_data->distance;
@@ -112,6 +173,8 @@ enum driver_state_t state = MANUAL;
         else if (state == MANUAL){
 
             while (state == MANUAL){
+                get_cliff(sensor_data); // always check for cliffs
+
                 lcd_printf("we are in manual");
                 //MANUAL MODE DRIVING
                 flag_monitor(sensor_data);
