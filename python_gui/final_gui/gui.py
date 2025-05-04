@@ -52,6 +52,10 @@ window = None
 scan_data = None
 polar_plot = None
 cybot_sensors = None
+left_45 = False
+left_90 = False
+right_45 = False
+right_90 = False
 
 def main():
     print("Press a key to send command to CyBot (press 'q' to quit)...")
@@ -161,13 +165,12 @@ def draw_gui():
     image_label.grid(row=0, column=1)
     window.update()
 
-
-
 def socket_data():
     global scan_data, polar_plot, window
     global fig, ax, tree 
     global cy_x, cy_y
     global angle_degrees, ping, ir
+    global left_45, left_90, right_45, right_90
     window.update()
     event = keyboard.read_event()
 
@@ -188,7 +191,7 @@ def socket_data():
 
                             # Create or overwrite existing sensor scan data file
                             file_object = open(full_path + filename,'w') # Open the file: file_object is just a variable for the file "handler" returned by open()
-
+                            clear_terminal()
                             while (rx_message.decode() != "END\n"): # Collect sensor data until "END" recieved
                                     rx_message = cybot.readline()   # Wait for sensor response, readline expects message to end with "\n"
                                     file_object.write(rx_message.decode())  # Write a line of sensor data to the file
@@ -197,6 +200,7 @@ def socket_data():
                             # For each line of the file split into columns, and assign each column to a variable
                             file_object = open(full_path + filename,'r') # Open the file: file_object is just a variable for the file "handler" returned by open()
                             line1 = file_object.readline()
+                            line2 = file_object.readline()
                             #file_header = file_object.readline() # Read and store the header row (i.e., 1st row) of the file into file_header
                             file_data = file_object.readlines() # Read the rest of the lines of the file into file_data
                             file_object.close() # Important to close file one you are done with it!!
@@ -217,10 +221,34 @@ def socket_data():
                     elif char.lower() == 'w':
                         rx_message = cybot.readline()
                         print("Got a message from server: " + rx_message.decode() + "\n")
-                        cy_y += 5
+                        # if left_45 == True and left_90 == False:
+                        #     cy_y += 5
+                        #     cy_x -= 5 
+                        # elif left_45 == True and left_90 == True:
+                        #     cy_y += 0
+                        #     cy_x -= 5
+                        # elif right_45 == True and right_90 == False:
+                        #     cy_y += 5
+                        #     cy_x += 5
+                        # elif right_45 == True and right_90 == True:
+                        #     cy_y += 0
+                        #     cy_x += 5
+                        # else: #If we have become straight within the polar plot move forward
+                        cy_y += 10
                         cy_x += 0
+                        
                         cybot_scan_data.cybot_display_plot(fig, ax, polar_plot, angle_degrees, ping, cy_x, cy_y)
                         window.update()
+                    # elif char.lower() == 'a':
+                    #     if left_45 == True and right_45 == False and right_90 == False:
+                    #         left_90 = True
+                    #     else:
+                    #         left_45 = True
+                    # elif char.lower() == 'd':
+                    #     if right_45 == True and left_45 == False and left_90 == False:
+                    #         right_90 = True
+                    #     else:
+                    #         right_45 = True
                     else:
                             print("Waiting for server reply\n")
                             rx_message = cybot.readline()
@@ -235,6 +263,8 @@ def socket_data():
                                 cybot_sensor_data.update_cybot_sensors("CLEAR", new_temp)
 
                             window.update()
-
+                            
+def clear_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 main()

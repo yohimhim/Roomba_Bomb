@@ -73,6 +73,8 @@ def cybot_display_plot(fig, ax, parent_frame, angle, ping_data, x, y):
 
     # Add initial Cybot at 0, 0
     mock_cybot = pl.Circle((x, y), 35, transform=ax.transData._b, color="blue", alpha=0.4)
+    front = pl.Circle((x, y + 20), 5, transform=ax.transData._b, color="red", alpha=0.4)
     ax.add_artist(mock_cybot)
+    ax.add_artist(front)
 
     canvas.draw()
