@@ -5,8 +5,7 @@
 #include "lcd.h"
 #include "movement.h"
 #include "open_interface.h"
-#include "cyBot_uart.h"
-#include "cyBot_Scan.h"
+
 #include "uart-interrupt.h"
 #include "stdbool.h"
 #include "main.h"

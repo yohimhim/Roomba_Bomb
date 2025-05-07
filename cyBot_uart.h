@@ -1,3 +1,15 @@
+/*
+*
+*   uart.h
+*
+*   Used to set up the RS232 connector and WIFI module
+*   uses UART1 at 115200
+*
+*
+*   @author Dane Larson
+*   @date 07/18/2016
+*   @ Phillip Jones updated: 9/11/2018
+*/
 
 #ifndef CYBOT_UART_H_
 #define CYBOT_UART_H_

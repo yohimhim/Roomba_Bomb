@@ -5,13 +5,11 @@
 #include "lcd.h"
 #include "movement.h"
 #include "open_interface.h"
-#include "cyBot_uart.h"
-#include "cyBot_Scan.h"
+
 #include "uart-interrupt.h"
 #include "stdbool.h"
 
 volatile int ping_scan_flag = 0;         // start scan
-volatile int ir_scan_flag = 0;         // start scan
 volatile int cancel_scan_flag = 0;  // cancel scan
 volatile int force_stop_flag = 0;   // stop all scanners and movement
 volatile int manual_flag = 0;       // toggle to manual mode
@@ -131,13 +129,6 @@ void UART1_Handler(void)
             //if byte received is a carriage return
             if (byte_received == 'z'){
                 ping_scan_flag = 1;
-            } else if (byte_received == 'x'){
-                ir_scan_flag = 1;
-            } else if (byte_received == 'c'){
-                cancel_scan_flag = 1;
-            } else if (byte_received == 'v'){
-                force_stop_flag = 1;
-                cancel_scan_flag = 1;
             } else if (byte_received == '1'){
                 auto_flag = 1;
             } else if (byte_received == '2'){

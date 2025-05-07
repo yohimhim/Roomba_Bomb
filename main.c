@@ -5,18 +5,20 @@
 #include "movement.h"
 #include "open_interface.h"
 #include "cyBot_uart.h"
-#include "cyBot_Scan.h"
 #include "uart-interrupt.h"
 #include "stdbool.h"
 #include "main.h"
 #include "scan.h"
 #include "adc.h"
+#include "servo.h"
+#include "scanning.h"
+
 
 
 
 #warning "Possible unimplemented functions"
 
-enum driver_state_t state = MANUAL;
+enum driver_state_t state = AUTO;
 
 
     void main() {
@@ -25,21 +27,18 @@ enum driver_state_t state = MANUAL;
     timer_init();
     lcd_init();
     uart_interrupt_init();
-
     adc_init();
-    cyBot_uart_init();
-    cyBOT_init_Scan(0b0111);
+    servoo_init();
+    ping_init();
+    ir_init();
 
     char my_data;       // Variable to get bytes from Client
 //    char command[100];  // Buffer to store command from Client
 //    int index = 0;      // Index position within the command buffer
 
-    //cyBOT_SERVO_Cal();
-    right_calibration_value = 253750;
-    left_calibration_value = 1288000;
+
     double sum = 0;
     double distance = 0;
-    cyBOT_Scan_t scan;
 
     float firstScan;
     float secondScan;
@@ -94,7 +93,7 @@ enum driver_state_t state = MANUAL;
 
 
 
-                     float angleToObject1 =  run_autonomous_scan(sensor_data,&scan); //Angle from first scan
+                     float angleToObject1 =  run_autonomous_scan(sensor_data); //Angle from first scan
                      firstScan = get_largest_width();
                      flag_monitor(sensor_data);
 
@@ -109,7 +108,7 @@ enum driver_state_t state = MANUAL;
                      timer_waitMillis(3200);
                      oi_setWheels(0, 0);
 
-                     float angleToObject2 =  run_autonomous_scan(sensor_data,&scan); //Angle from second scan
+                     float angleToObject2 =  run_autonomous_scan(sensor_data); //Angle from second scan
                      secondScan = get_largest_width();
                      flag_monitor(sensor_data);
 
@@ -129,7 +128,7 @@ enum driver_state_t state = MANUAL;
                         oi_setWheels(0, 0);
 
                      }
-                        float angleToObject = run_autonomous_scan(sensor_data,&scan);
+                        float angleToObject = run_autonomous_scan(sensor_data);
                         flag_monitor(sensor_data);
 
                               //If the scan is cancelled, we don't want it to calculate angles
@@ -174,6 +173,8 @@ enum driver_state_t state = MANUAL;
         else if (state == MANUAL){
 
             while (state == MANUAL){
+                lcd_printf("we are in manual");
+
                 oi_update(sensor_data);
                 int mode = 0;
 
@@ -213,41 +214,35 @@ enum driver_state_t state = MANUAL;
                 case 'f':
                     oi_setWheels(0, 0);
                     break;
+                case 'u':
+                    //update
+                    break;
                 default:
                     break;
                 }
             }
         }
+        oi_free(sensor_data); // do this once at end of main()
+
     }
-
-    oi_free(sensor_data); // do this once at end of main()
-
 }
 
 void flag_monitor(oi_t *sensor_data){
     //start scan
 
-    cyBOT_Scan_t scan;
 
     //also includes cancel scan flag check within scan.c
     if (ping_scan_flag == 1){
         lcd_clear();
         lcd_puts("Scanning...");
-        float x = run_autonomous_scan(sensor_data, &scan);
+        float x = run_autonomous_scan(sensor_data);
         lcd_clear();
 
         ping_scan_flag = 0;
         cancel_scan_flag = 0;
     }
 
-    //ir scan
-    if (ir_scan_flag == 1){
-            lcd_clear();
-            lcd_puts("IR scan...");
-            ir_scan();
-            ir_scan_flag = 0;
-            cancel_scan_flag = 0;
-        }
+
 
     //force stop
     if (force_stop_flag == 1){
@@ -267,14 +262,14 @@ void flag_monitor(oi_t *sensor_data){
     //toggle driving modes
     if (auto_flag == 1){
         lcd_clear();
-        lcd_puts("SWITCHED TO: '\n' AUTO MODE.");
+        lcd_puts("SWITCHED TO:              AUTO MODE.");
 
         state = AUTO;
         auto_flag = 0;
     }
     if (manual_flag == 1){
         lcd_clear();
-        lcd_puts("SWITCHED TO: '\n' MANUAL MODE.");
+        lcd_puts("SWITCHED TO:              MANUAL MODE.");
 
         state = MANUAL;
         manual_flag = 0;

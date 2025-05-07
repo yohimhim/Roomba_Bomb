@@ -9,14 +9,12 @@
 #include "lcd.h"
 #include "movement.h"
 #include "open_interface.h"
-#include "cyBot_uart.h"
-#include "cyBot_Scan.h"
+
 #include "uart-interrupt.h"
 #include "stdbool.h"
 
 extern volatile int cancel_scan_flag; // flag to tell the main program a scan was canceled
 extern volatile int ping_scan_flag;        // flag to tell the main program a scan was called
-extern volatile int ir_scan_flag;        // flag to tell the main program a scan was called
 extern volatile int force_stop_flag;  // flag to tell the main program a forced stop was called
 extern volatile int auto_flag;        // flag to tell the bot to switch to auto mode
 extern volatile int manual_flag;      // flag to tell the bot to switch to manual mode

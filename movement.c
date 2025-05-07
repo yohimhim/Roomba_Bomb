@@ -50,12 +50,10 @@ void manual_stop(){
             if (color == 1){
               mode =1;
               return mode;
-                break;
             }
 
             if (!(bumper || color) == 0){
                 return mode;
-                break;
             }
     }
 
@@ -207,7 +205,7 @@ void manual_stop(){
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
-            sprintf(data, "Cliff:2,3");
+            sprintf(data, "BLACK FOUND");
             uart_sendStr(data);
 
 
@@ -218,7 +216,7 @@ void manual_stop(){
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
-            sprintf(data,"Cliff:1,2");
+            sprintf(data,"BLACK FOUND");
             uart_sendStr(data);
 
 
@@ -228,7 +226,7 @@ void manual_stop(){
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
-            sprintf(data,"Cliff:3,4");
+            sprintf(data,"BLACK FOUND");
             uart_sendStr(data);
 
         }
@@ -238,7 +236,7 @@ void manual_stop(){
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
-            sprintf(data,"Cliff:2");
+            sprintf(data,"BLACK FOUND");
             uart_sendStr(data);
 
 
@@ -248,7 +246,7 @@ void manual_stop(){
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
-            sprintf(data,"Cliff:3");
+            sprintf(data,"BLACK FOUND");
             uart_sendStr(data);
 
 
@@ -259,7 +257,7 @@ void manual_stop(){
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
-            sprintf(data,"Cliff:1");
+            sprintf(data,"BLACK FOUND");
             uart_sendStr(data);
 
 
@@ -270,7 +268,7 @@ void manual_stop(){
             timer_waitMillis(1500);
             oi_setWheels(0,0);
             oi_update(sensor_data);
-            sprintf(data,"Cliff:4");
+            sprintf(data,"BLACK FOUND");
             uart_sendStr(data);
 
 
